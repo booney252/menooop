@@ -10,7 +10,8 @@
    ───────────────────────────────────────────────────────────── */
 
 .daylight {
-  --cream: #f2e4cc; /* the sweep behind the jar in the hero      */
+  --cream: #f7e4cf; /* sampled off the sweep behind the jar in the hero,
+                       so the full-bleed hero meets the page with no seam */
   --paper: #faf4e9; /* the carton, the tissue — raised surfaces  */
   --plum: #4c1b2c; /* the lid, one step deeper — body ink       */
   --plum-lift: #6b2740; /* the wordmark — rules, marks, the button  */

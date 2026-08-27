@@ -56,7 +56,7 @@ export default function EveningPowder() {
             alt="A frosted lilac jar of Marlow Evening Powder beside its cream carton, on warm cream."
             ratio={4 / 5}
             priority
-            className="[&_img]:object-[72%_center]"
+            className="[&_img]:object-[85%_center]"
           />
         </div>
 
@@ -68,7 +68,7 @@ export default function EveningPowder() {
               fill
               priority
               sizes="100vw"
-              className="object-cover object-[center_66%]"
+              className="object-cover object-[center_72%]"
             />
           </div>
           <div className="absolute inset-0 flex items-center">
@@ -102,7 +102,7 @@ export default function EveningPowder() {
         <InView>
           <Photo
             src={`${P}/ingredients-flat-lay.jpg`}
-            alt="Six small ceramic dishes arranged around the open jar: saffron threads, ashwagandha root, magnesium, glycine, creatine and theanine."
+            alt="Five small ceramic dishes arranged around the open jar: saffron threads, ashwagandha root, and three white powders."
             ratio={1}
             sizes="(min-width: 1160px) 1080px, 100vw"
             className="lift"
@@ -203,15 +203,15 @@ export default function EveningPowder() {
             <Photo
               src={`${P}/hands-scooping.jpg`}
               alt="A scoop of the pale powder falling into a glass of water on a marble counter, a warm kitchen behind."
-              ratio={4 / 5}
+              ratio={3 / 4}
               sizes="(min-width: 640px) 50vw, 100vw"
             />
           </InView>
           <InView delay={90}>
             <Photo
               src={`${P}/bedside-table.jpg`}
-              alt="The closed jar on a bedside table beside a lamp, a book, reading glasses and an empty glass."
-              ratio={4 / 5}
+              alt="The closed jar on a bedside table beside a lamp, a book, reading glasses and a drained glass."
+              ratio={3 / 4}
               sizes="(min-width: 640px) 50vw, 100vw"
             />
           </InView>
@@ -263,7 +263,7 @@ export default function EveningPowder() {
           <Photo
             src={`${P}/woman-by-window.jpg`}
             alt="A woman in a cream sweater at a kitchen window in morning light, holding a glass, the open jar beside her."
-            ratio={4 / 5}
+            ratio={3 / 4}
           />
         </div>
         <div className="hidden sm:block">
@@ -272,7 +272,7 @@ export default function EveningPowder() {
             alt="A woman in a cream sweater at a kitchen window in morning light, holding a glass, the open jar beside her."
             ratio={16 / 9}
             sizes="100vw"
-            className="[&_img]:object-[center_28%]"
+            className="[&_img]:object-[center_78%]"
           />
         </div>
       </section>

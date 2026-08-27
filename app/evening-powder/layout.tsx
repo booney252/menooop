@@ -22,7 +22,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
     <>
       {/* The app paints the document ink. Repaint it cream while the
           site is mounted, so overscroll and the browser chrome match. */}
-      <style>{`html,body{background:#f2e4cc}`}</style>
+      <style>{`html,body{background:#f7e4cf}`}</style>
       <div className={`daylight ${bodoni.variable} min-h-dvh`}>{children}</div>
     </>
   );

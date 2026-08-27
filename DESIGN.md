@@ -187,6 +187,17 @@ Two things changed during the build, from reading the screenshots.
 - The time axis carried four labels, and on a 390px phone "Tonight" and
   "Week 1" collided into one phrase. The phone gets three; the staircase still
   reads.
+- The photographs came in at 4:3 and 3:4 rather than the 3:2 and 4:5 the
+  layout had assumed, so the declared ratios were corrected to the real ones
+  and only two crops were kept. `--cream` was then resampled off the hero
+  photograph's own backdrop (`#f7e4cf`), because the hero is full-bleed and any
+  gap between the page ground and the picture shows as a seam under the
+  masthead.
+- The film slot could not hold the whole portrait on a wide screen. Rather
+  than crop her face off centre, the desktop band sits at 78% and lands on the
+  hands, the glass and the jar; the phone keeps the full portrait, face
+  included. The two crops carry different halves of the same photograph on
+  purpose.
 
 ## Rules held
 
