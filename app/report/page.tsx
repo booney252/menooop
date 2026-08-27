@@ -6,7 +6,7 @@ import { AppShell } from "@/components/AppShell";
 import { Action } from "@/components/Choice";
 import { PigmentStrip } from "@/components/PigmentStrip";
 import { Reveal } from "@/components/Reveal";
-import { SCALE, SYMPTOM_BY_ID, type SymptomId } from "@/lib/data";
+import { SCALE, SYMPTOM_BY_ID, verb, type SymptomId } from "@/lib/data";
 import { longDate, monthName, today } from "@/lib/dates";
 import {
   bestLutealLift,
@@ -93,14 +93,14 @@ function shortVersion(profile: Profile, entries: Record<string, Entry>): string[
   const cyc = bestLutealLift(entries, profile);
   if (cyc?.lift) {
     out.push(
-      `${SYMPTOM_BY_ID[cyc.id].label} runs about ${cyc.lift.lift}% heavier in the five days before a period than through the rest of the month.`
+      `${SYMPTOM_BY_ID[cyc.id].label} ${verb(cyc.id, "runs", "run")} about ${cyc.lift.lift}% heavier in the five days before a period than through the rest of the month.`
     );
   }
 
   const eased = bestSupplementShift(entries, profile);
   if (eased?.shift) {
     out.push(
-      `${SYMPTOM_BY_ID[eased.id].label} is down ${eased.shift.pct}% since I started ${profile.supplements[0].toLowerCase()} ${word(SUPPLEMENT_START)} days ago.`
+      `${SYMPTOM_BY_ID[eased.id].label} ${verb(eased.id, "is", "are")} down ${eased.shift.pct}% since I started ${profile.supplements[0].toLowerCase()} ${word(SUPPLEMENT_START)} days ago.`
     );
   }
   return out;

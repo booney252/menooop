@@ -4,23 +4,32 @@ import Link from "next/link";
 
 const TABS = [
   { id: "today", label: "Today", href: "/today" },
+  { id: "ask", label: "Ask", href: "/ask" },
   { id: "patterns", label: "Patterns", href: "/patterns" },
   { id: "report", label: "Report", href: "/report" },
 ] as const;
 
-export function TabBar({ active }: { active: string }) {
+export function TabBar({
+  active,
+  withFade = true,
+}: {
+  active: string;
+  withFade?: boolean;
+}) {
   return (
     <>
       {/* content settles into the ground before it reaches the bar */}
-      <div
-        aria-hidden
-        className="no-print pointer-events-none absolute inset-x-0 bottom-[70px] z-30 h-16 bg-gradient-to-t from-ink to-transparent"
-      />
+      {withFade ? (
+        <div
+          aria-hidden
+          className="no-print pointer-events-none absolute inset-x-0 bottom-[70px] z-30 h-16 bg-gradient-to-t from-ink to-transparent"
+        />
+      ) : null}
       <nav
         className="no-print absolute inset-x-0 bottom-0 z-40 border-t hair bg-ink"
         aria-label="Sections"
       >
-        <ul className="mx-auto flex max-w-[330px] items-stretch justify-between px-2 pt-1 pb-[max(14px,env(safe-area-inset-bottom))]">
+        <ul className="mx-auto flex max-w-[350px] items-stretch justify-between px-1 pt-1 pb-[max(14px,env(safe-area-inset-bottom))]">
           {TABS.map((t) => {
             const on = t.id === active;
             return (

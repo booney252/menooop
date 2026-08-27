@@ -60,6 +60,20 @@ fig pigment has soaked into the surface.
 
 All the boldness is spent there. Everything else stays quiet.
 
+## Ask
+
+Marlow speaks in the page; she types in a slab. Her messages sit in a clay
+bubble on the right; Marlow's answers are set as flowing body text with a
+single fig mark above them, like a paragraph sign in a letter. That asymmetry
+is deliberate — a two-column bubble chat would have dragged the whole app into
+generic-messenger territory, and Marlow reading as a letter keeps her closer to
+the report than to a support widget.
+
+The empty state offers three openers drawn from her own record rather than
+generic prompts, so the first thing she sees is that this thing has read her.
+The disclaimer sits under the composer permanently, small and calm, because it
+is the one line that has to be there every time.
+
 ## Rules held throughout
 
 - No photography of any kind, and no emoji as UI. Texture comes from a faint
@@ -70,6 +84,9 @@ All the boldness is spent there. Everything else stays quiet.
   sentences.
 - Text-only tab bar with a single fig dot for the active section — icon tab
   bars are the template tell.
+- Marlow never opens an answer with a paragraph of empathy before the point,
+  never uses bullet lists unless asked for options, and never says journey,
+  warrior, thrive, or "the change".
 - One primary action per screen. If there are two, one gets cut.
 - Motion is slow settles and fades only, and it respects `prefers-reduced-motion`.
 - Tap targets are 44px minimum, focus is always visible, and every colour pair

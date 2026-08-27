@@ -8,13 +8,18 @@ import {
   useMemo,
   useState,
 } from "react";
+import type { ChatMessage } from "./chat";
 import type { SymptomId } from "./data";
 import { key, today } from "./dates";
 import { buildHistory, DEFAULT_PROFILE, type Entry, type Profile } from "./seed";
 
 const STORAGE = "marlow.v1";
 
-type State = { profile: Profile; entries: Record<string, Entry> };
+type State = {
+  profile: Profile;
+  entries: Record<string, Entry>;
+  chat: ChatMessage[];
+};
 
 type Store = State & {
   ready: boolean;
@@ -23,13 +28,16 @@ type Store = State & {
   setProfile: (patch: Partial<Profile>) => void;
   completeOnboarding: (patch: Partial<Profile>) => void;
   saveCheckIn: (severities: Partial<Record<SymptomId, number>>, note?: string) => void;
+  addMessage: (m: ChatMessage) => void;
+  updateMessage: (id: string, text: string) => void;
+  clearChat: () => void;
   reset: () => void;
 };
 
 const Ctx = createContext<Store | null>(null);
 
 function seeded(profile: Profile): State {
-  return { profile, entries: buildHistory(profile) };
+  return { profile, entries: buildHistory(profile), chat: [] };
 }
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
@@ -42,7 +50,9 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       const raw = window.localStorage.getItem(STORAGE);
       if (raw) {
         const parsed = JSON.parse(raw) as State;
-        if (parsed?.profile && parsed?.entries) setState(parsed);
+        if (parsed?.profile && parsed?.entries) {
+          setState({ ...parsed, chat: parsed.chat ?? [] });
+        }
       }
     } catch {
       /* a corrupt cache is not worth an error screen */
@@ -68,7 +78,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       const profile = { ...s.profile, ...patch, onboarded: true };
       // rebuild the history against whatever she actually chose, so Patterns
       // and the report have something to say on day one of the demo
-      return { profile, entries: buildHistory(profile) };
+      return { profile, entries: buildHistory(profile), chat: s.chat };
     });
   }, []);
 
@@ -82,6 +92,21 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     },
     []
   );
+
+  const addMessage = useCallback((m: ChatMessage) => {
+    setState((s) => ({ ...s, chat: [...s.chat, m] }));
+  }, []);
+
+  const updateMessage = useCallback((id: string, text: string) => {
+    setState((s) => ({
+      ...s,
+      chat: s.chat.map((m) => (m.id === id ? { ...m, text } : m)),
+    }));
+  }, []);
+
+  const clearChat = useCallback(() => {
+    setState((s) => ({ ...s, chat: [] }));
+  }, []);
 
   const reset = useCallback(() => {
     try {
@@ -100,9 +125,23 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
       setProfile,
       completeOnboarding,
       saveCheckIn,
+      addMessage,
+      updateMessage,
+      clearChat,
       reset,
     }),
-    [state, ready, todayKey, setProfile, completeOnboarding, saveCheckIn, reset]
+    [
+      state,
+      ready,
+      todayKey,
+      setProfile,
+      completeOnboarding,
+      saveCheckIn,
+      addMessage,
+      updateMessage,
+      clearChat,
+      reset,
+    ]
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

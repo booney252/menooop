@@ -121,6 +121,20 @@ body {
   animation: soak 0.6s var(--ease-settle) both;
 }
 
+/* Marlow is composing — three marks, breathing */
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.22;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.breathe {
+  animation: breathe 1.7s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

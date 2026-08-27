@@ -5,9 +5,12 @@ import { TabBar } from "./TabBar";
 export function AppShell({
   children,
   tab,
+  footer,
 }: {
   children: React.ReactNode;
-  tab?: "today" | "patterns" | "report";
+  tab?: "today" | "ask" | "patterns" | "report";
+  /** pinned above the tab bar — used by Ask for its composer */
+  footer?: React.ReactNode;
 }) {
   return (
     <div className="min-h-dvh bg-[#151210] sm:flex sm:items-center sm:justify-center sm:p-10">
@@ -24,7 +27,10 @@ export function AppShell({
         <div className="h-dvh overflow-y-auto overscroll-contain sm:h-full">
           {children}
         </div>
-        {tab ? <TabBar active={tab} /> : null}
+        {footer ? (
+          <div className="absolute inset-x-0 bottom-[71px] z-40">{footer}</div>
+        ) : null}
+        {tab ? <TabBar active={tab} withFade={!footer} /> : null}
       </div>
     </div>
   );

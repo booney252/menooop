@@ -1,4 +1,4 @@
-import { SYMPTOM_BY_ID, type SymptomId } from "./data";
+import { SYMPTOM_BY_ID, verb, type SymptomId } from "./data";
 import { addDays, key, today } from "./dates";
 import { HISTORY_DAYS, SUPPLEMENT_START, periodStarts, type Entry, type Profile } from "./seed";
 
@@ -171,7 +171,7 @@ export function todayInsight(
     const streak = calmStreak(entries, id);
     if (streak >= 5) {
       return {
-        line: `Your ${SYMPTOM_BY_ID[id].phrase} has been steadier ${word(streak)} days running.`,
+        line: `Your ${SYMPTOM_BY_ID[id].phrase} ${verb(id, "has", "have")} been steadier ${word(streak)} days running.`,
         foot: "That’s the longest quiet stretch in the two months you’ve logged.",
       };
     }
@@ -180,7 +180,7 @@ export function todayInsight(
   const eased = bestSupplementShift(entries, profile);
   if (eased?.shift) {
     return {
-      line: `${SYMPTOM_BY_ID[eased.id].label} is down ${pct(eased.shift.pct)} since you added ${profile.supplements[0].toLowerCase()}.`,
+      line: `${SYMPTOM_BY_ID[eased.id].label} ${verb(eased.id, "is", "are")} down ${pct(eased.shift.pct)} since you added ${profile.supplements[0].toLowerCase()}.`,
       foot: "Measured against the three weeks before you started.",
     };
   }
@@ -188,7 +188,7 @@ export function todayInsight(
   const cyc = bestLutealLift(entries, profile);
   if (cyc?.lift) {
     return {
-      line: `Your ${SYMPTOM_BY_ID[cyc.id].phrase} gathers in the five days before a period.`,
+      line: `Your ${SYMPTOM_BY_ID[cyc.id].phrase} ${verb(cyc.id, "gathers", "gather")} in the five days before a period.`,
       foot: `About ${pct(cyc.lift.lift)} heavier in that window than the rest of the month.`,
     };
   }
@@ -196,7 +196,7 @@ export function todayInsight(
   if (first) {
     const t = recentTrend(entries, first);
     return {
-      line: `Your ${SYMPTOM_BY_ID[first].phrase} has been ${t.word} these past two weeks.`,
+      line: `Your ${SYMPTOM_BY_ID[first].phrase} ${verb(first, "has", "have")} been ${t.word} these past two weeks.`,
       foot: "Keep going and the shape of it gets clearer.",
     };
   }
@@ -219,7 +219,7 @@ export function patternCards(
   const cyc = bestLutealLift(entries, profile);
   if (cyc?.lift) {
     cards.push({
-      title: `${SYMPTOM_BY_ID[cyc.id].label} clusters before your period`,
+      title: `${SYMPTOM_BY_ID[cyc.id].label} ${verb(cyc.id, "clusters", "cluster")} before your period`,
       body: `In the five days before each period it runs about ${pct(cyc.lift.lift)} heavier than through the rest of the month. It’s the clearest rhythm in your two months of entries.`,
     });
   }
@@ -238,7 +238,7 @@ export function patternCards(
     if (streak >= 5) {
       cards.push({
         title: `${Word(streak)} steadier days in a row`,
-        body: `${SYMPTOM_BY_ID[id].label} has stayed at barely there or below for ${word(streak)} days now. Two months ago that was rare enough to be worth marking.`,
+        body: `${SYMPTOM_BY_ID[id].label} ${verb(id, "has", "have")} stayed at barely there or below for ${word(streak)} days now. Two months ago that was rare enough to be worth marking.`,
       });
       break;
     }
@@ -249,7 +249,7 @@ export function patternCards(
     .find((x) => x.t.word === "building");
   if (building && cards.length < 4) {
     cards.push({
-      title: `${SYMPTOM_BY_ID[building.id].label} has been building`,
+      title: `${SYMPTOM_BY_ID[building.id].label} ${verb(building.id, "has", "have")} been building`,
       body: `A little heavier over the past fortnight than the fortnight before. Nothing to act on — it’s here so you notice it before your appointment does.`,
     });
   }
@@ -275,7 +275,7 @@ export function doctorQuestions(
   const cyc = bestLutealLift(entries, profile);
   if (cyc?.lift) {
     qs.push(
-      `My ${SYMPTOM_BY_ID[cyc.id].phrase} clusters in the five days before a period. Does that pattern change what you’d suggest?`
+      `My ${SYMPTOM_BY_ID[cyc.id].phrase} ${verb(cyc.id, "clusters", "cluster")} in the five days before a period. Does that pattern change what you’d suggest?`
     );
   }
   if (profile.hrt !== "yes") {

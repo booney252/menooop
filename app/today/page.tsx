@@ -60,14 +60,6 @@ export default function Today() {
         </Reveal>
 
         <div className="flex-1" />
-
-        {!done && (
-          <Reveal delay={1000}>
-            <p className="mt-16 text-[13.5px] leading-relaxed text-dune">
-              One day Marlow will answer questions too. For now it just remembers.
-            </p>
-          </Reveal>
-        )}
       </div>
     </AppShell>
   );
