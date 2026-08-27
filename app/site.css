@@ -1,0 +1,174 @@
+/* ─────────────────────────────────────────────────────────────
+   Marlow — daylight.
+
+   The app is warm dark stoneware. The website is the same brand
+   with the lights on: cream ground, plum ink, one lilac tint,
+   all six values sampled off the product photography.
+
+   Everything here is scoped under .daylight so none of it can
+   reach the app.
+   ───────────────────────────────────────────────────────────── */
+
+.daylight {
+  --cream: #f2e4cc; /* the sweep behind the jar in the hero      */
+  --paper: #faf4e9; /* the carton, the tissue — raised surfaces  */
+  --plum: #4c1b2c; /* the lid, one step deeper — body ink       */
+  --plum-lift: #6b2740; /* the wordmark — rules, marks, the button  */
+  --lilac: #d9c6de; /* frosted glass                            */
+  --blush: #e9d2da; /* the powder                               */
+  --taupe: #6f5847; /* shadow on the wood — secondary text      */
+
+  --line: color-mix(in srgb, var(--plum) 16%, transparent);
+  --line-soft: color-mix(in srgb, var(--plum) 9%, transparent);
+
+  --site-display: var(--font-bodoni), "Didot", "Bodoni MT", Georgia, serif;
+
+  background: var(--cream);
+  color: var(--plum);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  color-scheme: light;
+}
+
+/* ── type ─────────────────────────────────────────────────── */
+.daylight .d {
+  font-family: var(--site-display);
+  font-weight: 400;
+  line-height: 1.06;
+  letter-spacing: -0.005em;
+  font-variation-settings: "opsz" 72;
+  text-wrap: balance;
+}
+.daylight .d-sm {
+  font-family: var(--site-display);
+  font-weight: 400;
+  line-height: 1.2;
+  font-variation-settings: "opsz" 22;
+}
+.daylight .eyebrow {
+  font-family: var(--font-body);
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--taupe);
+}
+.daylight .lede {
+  font-size: 19px;
+  line-height: 1.62;
+}
+.daylight .fine {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--taupe);
+}
+
+/* The wordmark. Bodoni, wide-tracked, exactly as it sits on the jar. */
+.daylight .wordmark {
+  font-family: var(--site-display);
+  font-variation-settings: "opsz" 40;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+/* ── surfaces ─────────────────────────────────────────────── */
+.daylight .rule {
+  border-color: var(--line);
+}
+.daylight .rule-soft {
+  border-color: var(--line-soft);
+}
+
+/* Soft depth, never a drop shadow with an edge. */
+.daylight .lift {
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--plum) 5%, transparent),
+    0 18px 44px -22px color-mix(in srgb, var(--plum) 26%, transparent);
+}
+
+.daylight :focus-visible {
+  outline: 2px solid var(--plum-lift);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* ── the button. Flat plum. No gradient, ever. ────────────── */
+.daylight .btn {
+  background: var(--plum);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  min-height: 52px;
+  border-radius: 2px;
+  transition:
+    background-color 0.45s var(--ease-settle),
+    transform 0.45s var(--ease-settle);
+}
+.daylight .btn:hover {
+  background: var(--plum-lift);
+}
+.daylight .btn:active {
+  transform: translateY(1px);
+}
+
+.daylight .field {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  min-height: 52px;
+  font-size: 16px;
+  color: var(--plum);
+  transition: border-color 0.45s var(--ease-settle);
+}
+.daylight .field::placeholder {
+  color: color-mix(in srgb, var(--taupe) 72%, transparent);
+}
+.daylight .field:focus {
+  border-color: var(--plum-lift);
+  outline: none;
+}
+
+/* ── motion: one slow rise, on entry only ─────────────────── */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.daylight .rise {
+  animation: rise 1.1s var(--ease-settle) both;
+}
+
+/* The dose line draws itself once, left to right. */
+@keyframes draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.daylight .draw {
+  transform-origin: left center;
+  animation: draw 1.4s var(--ease-settle) both;
+}
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.daylight .fadein {
+  animation: fadein 1s var(--ease-settle) both;
+}

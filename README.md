@@ -60,6 +60,29 @@ call rather than dead-ending; the stable brief carries a cache breakpoint.
 in `lib/marlow-prompt.ts` and the Ask screen says so in plain words. The demo
 never pretends a canned reply is a live one.
 
+## The Evening Powder site
+
+`/evening-powder` is a one-page product site for the powder — a static mockup
+for putting behind organic traffic to measure waitlist conversion. Built
+mobile-first at 390px, with sections sized so each one reads whole in a 9:16
+phone crop, because short-form video is the distribution.
+
+It is the daylight version of the same brand: cream ground, plum ink, one lilac
+tint, all sampled off the product photography, and Instrument Sans carried over
+from the app. There is no cart and no checkout — the only action on the page is
+the waitlist, and nothing is sent anywhere yet.
+
+The photographs go in `public/photos/`; that folder's README lists the nine
+files and their crops. The one thing on the page that is not a photograph and
+not real is the app's trend chart, which is drawn in code
+(`components/site/TrendChart.tsx`) rather than mocked up as a screenshot, and
+says so in its own caption.
+
+```bash
+npm run build && npx next start -p 3100
+node scripts/site-shots.mjs ./screenshots/site   # 390px and 1440px, section by section
+```
+
 ## Design
 
 `DESIGN.md` carries the palette, type and the signature device. The short
