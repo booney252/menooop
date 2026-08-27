@@ -1,0 +1,290 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Marlow: stoneware & ink ───────────────────────────────
+     Six tokens. Everything else is derived from them.        */
+  --color-ink: #201c1a;   /* ground — warm near-black, dark glaze   */
+  --color-clay: #2b2521;  /* raised surfaces                        */
+  --color-bone: #f2ebe1;  /* text on dark; the report's paper       */
+  --color-dune: #a2948a;  /* secondary text, hairlines              */
+  --color-fig: #6b3e48;   /* the one accent — slabs, rules, paper    */
+  --color-wash: #38302e;  /* lowest pigment step, inactive fills    */
+  --color-figlift: #875d62; /* the same accent lifted, for small marks
+                               on the dark ground where fig sinks in     */
+
+  --font-display: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-instrument), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Helvetica, Arial, sans-serif;
+
+  --ease-settle: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+:root {
+  color-scheme: dark;
+
+  /* pigment ramp on ink — severity is depth, never hue */
+  --pigment-0: #3a2f2e;
+  --pigment-1: #57393f;
+  --pigment-2: #7b4b57;
+  --pigment-3: #9a5764;
+
+  /* the same ramp, soaked into paper */
+  --paper-0: #e4dacb;
+  --paper-1: #c6a5a5;
+  --paper-2: #9e6a73;
+  --paper-3: #7b4b57;
+
+  --hair: color-mix(in srgb, var(--color-dune) 22%, transparent);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--color-ink);
+  color: var(--color-bone);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Hand-finished paper grain. No photography anywhere in this app —
+   material comes from texture and light only. */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── type helpers ─────────────────────────────────────────── */
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.18;
+}
+.label {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-dune);
+  font-weight: 500;
+}
+.hair {
+  border-color: var(--hair);
+}
+
+/* ── focus ────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-bone);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.paper :focus-visible {
+  outline-color: var(--color-fig);
+}
+
+/* ── motion: slow, soft, minimal ──────────────────────────── */
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes soak {
+  from {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.settle {
+  animation: settle 0.85s var(--ease-settle) both;
+}
+.soak {
+  animation: soak 0.6s var(--ease-settle) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ── the report is a different material ───────────────────── */
+.paper {
+  background: var(--color-bone);
+  color: #2a2320;
+}
+.paper .grain-paper::after {
+  opacity: 0.5;
+}
+
+@media print {
+  @page {
+    margin: 12mm 14mm;
+  }
+  .no-print,
+  .grain::after {
+    display: none !important;
+  }
+  html,
+  body {
+    height: auto !important;
+    background: #fff !important;
+  }
+  /* the report lives inside a phone-shaped scroller on screen — let it out */
+  .report-shell {
+    display: block !important;
+    padding: 0 !important;
+    background: #fff !important;
+  }
+  .report-frame,
+  .report-scroll {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+  .paper {
+    background: #fff !important;
+  }
+  .print-page {
+    padding: 0 !important;
+  }
+  /* ── the report is a one-page document. Everything below exists to
+     keep it on one sheet without shrinking it into unreadability. ── */
+  .print-page {
+    font-size: 12px;
+  }
+  .paper-label {
+    margin-top: 0.85rem !important;
+    margin-bottom: 0 !important;
+    font-size: 9.5px;
+  }
+  .doc-title {
+    margin-top: 0.9rem !important;
+    font-size: 23px;
+  }
+  .doc-meta {
+    margin-top: 0.4rem !important;
+    font-size: 11px;
+  }
+  .doc-lead {
+    margin-top: 0.35rem !important;
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
+  .doc-note {
+    margin-top: 0.25rem !important;
+    font-size: 11px;
+  }
+  .doc-rows {
+    margin-top: 0.45rem !important;
+    gap: 0.42rem !important;
+  }
+  .doc-rowname {
+    font-size: 12.5px;
+  }
+  .doc-trend {
+    font-size: 11px;
+  }
+  .doc-strip {
+    margin-top: 0.3rem !important;
+  }
+  .doc-strip > div {
+    height: 15px !important;
+  }
+  .doc-rownote {
+    margin-top: 0.2rem !important;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .doc-tried-list,
+  .doc-quotes {
+    margin-top: 0.45rem !important;
+    gap: 0.35rem !important;
+  }
+  .doc-tried {
+    padding-bottom: 0.3rem !important;
+    font-size: 12px;
+  }
+  .doc-tried span {
+    font-size: 12px;
+  }
+  .doc-quote {
+    font-size: 12px;
+  }
+  .doc-questions {
+    margin-top: 0.4rem !important;
+    gap: 0.4rem !important;
+  }
+  /* two quotes is enough on paper */
+  .doc-quotes li:nth-child(n + 3) {
+    display: none;
+  }
+  .doc-q {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+  .doc-foot {
+    font-size: 10px;
+  }
+  .print-page .mt-12,
+  .print-page .mt-11,
+  .print-page .mt-10,
+  .print-page .mt-8 {
+    margin-top: 0.72rem !important;
+  }
+  .print-page .pt-4 {
+    padding-top: 0.4rem !important;
+  }
+  .print-page > *,
+  .doc-rows > div,
+  li {
+    break-inside: avoid;
+  }
+}
+
+/* thin, quiet scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-wash) transparent;
+}
+
+/* ── report paper: its own quiet type colours ─────────────── */
+.paper-dim {
+  color: #6e5c50;
+}
+.paper-rule {
+  border-color: #d9cbb9;
+}
+.paper-label {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #6f5c4e;
+  font-weight: 500;
+}
