@@ -35,13 +35,17 @@ export default async function Preview({
   searchParams,
 }: {
   params: Promise<{ screen: string }>;
-  searchParams: Promise<{ type?: string }>;
+  searchParams: Promise<{ body?: string }>;
 }) {
   if (!enabled()) notFound();
   const { screen } = await params;
-  const { type } = await searchParams;
+  const { body } = await searchParams;
   const view = renderScreen(screen, previewHistory(), previewInsights());
-  return type === "a" || type === "b" ? <div data-type={type}>{view}</div> : view;
+  return body === "bricolage" || body === "spectral" ? (
+    <div data-body={body}>{view}</div>
+  ) : (
+    view
+  );
 }
 
 function renderScreen(

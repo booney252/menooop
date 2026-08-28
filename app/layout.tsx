@@ -1,34 +1,31 @@
 import type { Metadata, Viewport } from "next";
 import {
-  Bodoni_Moda,
+  Bricolage_Grotesque,
   DM_Serif_Display,
-  Epilogue,
-  Instrument_Sans,
-  Karla,
-  Newsreader,
+  Literata,
+  Spectral,
 } from "next/font/google";
 import { RegisterServiceWorker } from "@/components/RegisterServiceWorker";
 import "./globals.css";
 
-const newsreader = Newsreader({
+const dmSerif = DM_Serif_Display({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-dmserif",
+});
+const literata = Literata({
   subsets: ["latin"],
   style: ["normal", "italic"],
   display: "swap",
-  variable: "--font-newsreader",
+  variable: "--font-literata",
 });
 
-const instrument = Instrument_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-instrument",
-});
-
-// Candidates for the type pairing, loaded so the preview can compare them.
+// Candidates for the body face, loaded so the preview can compare them.
 // The two that lose come out of here and out of globals.css.
-const bodoni = Bodoni_Moda({ subsets: ["latin"], style: ["normal", "italic"], display: "swap", variable: "--font-bodoni" });
-const karla = Karla({ subsets: ["latin"], display: "swap", variable: "--font-karla" });
-const dmSerif = DM_Serif_Display({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], display: "swap", variable: "--font-dmserif" });
-const epilogue = Epilogue({ subsets: ["latin"], display: "swap", variable: "--font-epilogue" });
+const bricolage = Bricolage_Grotesque({ subsets: ["latin"], display: "swap", variable: "--font-bricolage" });
+const spectral = Spectral({ subsets: ["latin"], weight: ["300", "400", "500", "600"], style: ["normal", "italic"], display: "swap", variable: "--font-spectral" });
 
 export const metadata: Metadata = {
   title: "Marlow",
@@ -46,7 +43,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${newsreader.variable} ${instrument.variable} ${bodoni.variable} ${karla.variable} ${dmSerif.variable} ${epilogue.variable}`}>
+    <html lang="en" className={`${dmSerif.variable} ${literata.variable} ${bricolage.variable} ${spectral.variable}`}>
       <body className="grain antialiased">
         {children}
         <RegisterServiceWorker />
