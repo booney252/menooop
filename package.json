@@ -11,7 +11,7 @@
     "db:verify": "bash scripts/db-verify.sh",
     "seed:demo": "tsx scripts/seed-demo.ts",
     "shots": "node scripts/screenshots.mjs ./screenshots",
-    "preview": "MARLOW_PREVIEW=1 next dev -p 3000"
+    "preview": "node scripts/preview.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.121.0",
