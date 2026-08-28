@@ -15,7 +15,7 @@
                                is too light to carry cream text.     */
 
   --font-display: var(--font-dmserif), Georgia, "Times New Roman", serif;
-  --font-body: var(--font-literata), Georgia, serif;
+  --font-body: var(--font-source), Georgia, serif;
 
   --ease-settle: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
@@ -44,7 +44,9 @@ body {
   font-size: 17px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  /* No letter-spacing correction here on purpose. Tightening tracking pulls
+     the word space in with it, so words run together while letters still sit
+     loose — the fit has to come from the face, not from a fudge. */
 }
 
 /* Hand-finished paper grain. No photography anywhere in this app —
@@ -299,25 +301,3 @@ body {
 }
 
 
-
-/* ── Body faces, for choosing between ────────────────────────────────────────
-   The display face is settled: DM Serif Display, for the wordmark and the one
-   sentence that matters. These change only the face everything else is set in.
-   Preview with ?body=bricolage or ?body=spectral; no parameter is Literata.
-   ────────────────────────────────────────────────────────────────────────── */
-
-/* Each block has to set font-family as well as the token: body has already
-   computed its own, and descendants inherit that computed value rather than
-   re-reading the variable. Redefining the token alone does nothing. */
-
-/* a grotesque with real quirk — contemporary, design-forward, still a sans */
-[data-body="bricolage"] {
-  --font-body: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
-  font-family: var(--font-body);
-}
-
-/* a sharper, more angular serif than Literata — less bookish, more editorial */
-[data-body="spectral"] {
-  --font-body: var(--font-spectral), Georgia, serif;
-  font-family: var(--font-body);
-}

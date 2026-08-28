@@ -1,10 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import {
-  Bricolage_Grotesque,
-  DM_Serif_Display,
-  Literata,
-  Spectral,
-} from "next/font/google";
+import { DM_Serif_Display, Source_Serif_4 } from "next/font/google";
 import { RegisterServiceWorker } from "@/components/RegisterServiceWorker";
 import "./globals.css";
 
@@ -15,17 +10,13 @@ const dmSerif = DM_Serif_Display({
   display: "swap",
   variable: "--font-dmserif",
 });
-const literata = Literata({
+
+const source = Source_Serif_4({
   subsets: ["latin"],
   style: ["normal", "italic"],
   display: "swap",
-  variable: "--font-literata",
+  variable: "--font-source",
 });
-
-// Candidates for the body face, loaded so the preview can compare them.
-// The two that lose come out of here and out of globals.css.
-const bricolage = Bricolage_Grotesque({ subsets: ["latin"], display: "swap", variable: "--font-bricolage" });
-const spectral = Spectral({ subsets: ["latin"], weight: ["300", "400", "500", "600"], style: ["normal", "italic"], display: "swap", variable: "--font-spectral" });
 
 export const metadata: Metadata = {
   title: "Marlow",
@@ -43,7 +34,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${dmSerif.variable} ${literata.variable} ${bricolage.variable} ${spectral.variable}`}>
+    <html lang="en" className={`${dmSerif.variable} ${source.variable}`}>
       <body className="grain antialiased">
         {children}
         <RegisterServiceWorker />

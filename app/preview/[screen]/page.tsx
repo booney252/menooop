@@ -30,22 +30,10 @@ function enabled() {
   return process.env.MARLOW_PREVIEW === "1" && process.env.VERCEL_ENV !== "production";
 }
 
-export default async function Preview({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ screen: string }>;
-  searchParams: Promise<{ body?: string }>;
-}) {
+export default async function Preview({ params }: { params: Promise<{ screen: string }> }) {
   if (!enabled()) notFound();
   const { screen } = await params;
-  const { body } = await searchParams;
-  const view = renderScreen(screen, previewHistory(), previewInsights());
-  return body === "bricolage" || body === "spectral" ? (
-    <div data-body={body}>{view}</div>
-  ) : (
-    view
-  );
+  return renderScreen(screen, previewHistory(), previewInsights());
 }
 
 function renderScreen(
