@@ -1,0 +1,28 @@
+# The optional daily email nudge needs something to call it every hour, so it
+# can catch each user at the hour she picked. Vercel's own cron only runs once
+# a day on the Hobby plan, so this does it instead — free, and it works on any
+# host.
+#
+# Set two repository secrets (Settings → Secrets and variables → Actions):
+#   MARLOW_SITE_URL  https://your-app.vercel.app
+#   CRON_SECRET      the same value as the CRON_SECRET env var on the host
+#
+# Delete this file if you are not using the email nudge.
+name: Daily check-in nudge
+
+on:
+  schedule:
+    - cron: "5 * * * *" # every hour, five past
+  workflow_dispatch: {}
+
+jobs:
+  nudge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call the nudge endpoint
+        run: |
+          code=$(curl -s -o /tmp/out -w '%{http_code}' \
+            -H "authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.MARLOW_SITE_URL }}/api/cron/nudge")
+          echo "HTTP $code"; cat /tmp/out
+          test "$code" = "200"

@@ -51,6 +51,11 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  // API routes do their own auth and answer in JSON. Redirecting them to the
+  // sign-in page would hand a fetch an HTML document instead of a 401 — and it
+  // would silently break the cron endpoint, which has no session at all.
+  if (pathname.startsWith("/api/")) return response;
+
   const isPublic = PUBLIC.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
   if (!user && !isPublic) {

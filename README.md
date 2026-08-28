@@ -12,6 +12,8 @@ cp .env.example .env.local        # fill in Supabase, at minimum
 npm run dev                       # http://localhost:3000 — build at 390px
 ```
 
+**Putting it on a real site: see `DEPLOY.md`.**
+
 ## Getting a database
 
 1. Create a Supabase project.

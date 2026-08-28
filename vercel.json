@@ -1,8 +1,4 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/nudge",
-      "schedule": "0 * * * *"
-    }
-  ]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs"
 }
