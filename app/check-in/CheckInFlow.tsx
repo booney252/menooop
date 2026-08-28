@@ -51,19 +51,28 @@ export function CheckInFlow({
   async function save() {
     setSaving(true);
     setError(null);
-    const result = await saveCheckIn({
-      severities: values as Record<string, number>,
-      goodThings,
-      note,
-      periodStarted,
-      durationMs: Date.now() - startedAt.current,
-    });
-    setSaving(false);
-    if ("error" in result && result.error) {
-      setError(result.error);
-      return;
+    try {
+      const result = await saveCheckIn({
+        severities: values as Record<string, number>,
+        goodThings,
+        note,
+        periodStarted,
+        durationMs: Date.now() - startedAt.current,
+      });
+      if ("error" in result && result.error) {
+        setError(result.error);
+        return;
+      }
+      setSaved(goodThings);
+    } catch {
+      // Offline, or the server is having a moment. Say so rather than sitting
+      // on "Saving…" — and do not clear what she just entered.
+      setError(
+        "That didn’t save — Marlow couldn’t reach the server. Your answers are still here; try again when you have signal."
+      );
+    } finally {
+      setSaving(false);
     }
-    setSaved(goodThings);
   }
 
   if (saved) return <Saved goodThings={saved} />;

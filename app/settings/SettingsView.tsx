@@ -89,8 +89,12 @@ function SymptomsSection({ current }: { current: SymptomKey[] }) {
           <Action
             onClick={() =>
               start(async () => {
-                const r = await updateSymptoms(chosen);
-                setMessage("error" in r && r.error ? r.error : "Saved.");
+                try {
+                  const r = await updateSymptoms(chosen);
+                  setMessage("error" in r && r.error ? r.error : "Saved.");
+                } catch {
+                  setMessage("Couldn’t reach the server. Try again.");
+                }
               })
             }
             disabled={pending || chosen.length < 3}
@@ -349,8 +353,17 @@ function DangerSection() {
               disabled={pending}
               onClick={() =>
                 start(async () => {
-                  const r = await deleteAccount(confirm);
-                  if (r && "error" in r && r.error) setError(r.error);
+                  setError(null);
+                  try {
+                    const r = await deleteAccount(confirm);
+                    if (r && "error" in r && r.error) {
+                      setError(r.error);
+                      return;
+                    }
+                    window.location.href = "/sign-in?deleted=1";
+                  } catch {
+                    setError("Marlow couldn’t reach the server just then. Try again.");
+                  }
                 })
               }
               className="flex-1 rounded-[14px] border border-fig bg-fig text-[15px] text-bone disabled:opacity-40"

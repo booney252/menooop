@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { Action } from "@/components/Choice";
 import { Reveal } from "@/components/Reveal";
@@ -11,7 +12,24 @@ const WINDOWS = [30, 60, 90] as const;
 export function ReportCover({ loggedDays }: { loggedDays: number }) {
   const [span, setSpan] = useState<(typeof WINDOWS)[number]>(60);
   const [say, setSay] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  const router = useRouter();
+
+  const make = () =>
+    start(async () => {
+      setError(null);
+      try {
+        const result = await generateReport(span, say);
+        if ("error" in result && result.error) {
+          setError(result.error);
+          return;
+        }
+        router.push(`/report/${result.id}`);
+      } catch {
+        setError("Marlow couldn’t reach the server. Check your connection and try again.");
+      }
+    });
 
   const thin = loggedDays < 7;
 
@@ -86,10 +104,10 @@ export function ReportCover({ loggedDays }: { loggedDays: number }) {
         <div className="flex-1" />
 
         <Reveal delay={720}>
-          <Action
-            onClick={() => start(() => void generateReport(span, say))}
-            disabled={pending || thin}
-          >
+          {error && (
+            <p className="mb-3 text-center text-[14.5px] leading-relaxed text-[#e0c9c2]">{error}</p>
+          )}
+          <Action onClick={make} disabled={pending || thin}>
             {pending ? "Putting it together…" : "Prepare the report"}
           </Action>
           <p className="mt-4 text-center text-[14px] text-dune">

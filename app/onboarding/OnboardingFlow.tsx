@@ -28,18 +28,23 @@ export function OnboardingFlow() {
   async function finish() {
     setSaving(true);
     setError(null);
-    const result = await completeOnboarding({
-      stage: stage ?? "irregular",
-      symptoms,
-      interventions: [...taking, custom].map((s) => s.trim()).filter(Boolean),
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
-    });
-    setSaving(false);
-    if ("error" in result && result.error) {
-      setError(result.error);
-      return;
+    try {
+      const result = await completeOnboarding({
+        stage: stage ?? "irregular",
+        symptoms,
+        interventions: [...taking, custom].map((s) => s.trim()).filter(Boolean),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
+      });
+      if ("error" in result && result.error) {
+        setError(result.error);
+        return;
+      }
+      setStep("done");
+    } catch {
+      setError("Marlow couldn’t reach the server. Check your connection and try again.");
+    } finally {
+      setSaving(false);
     }
-    setStep("done");
   }
 
   return (

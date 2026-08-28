@@ -44,7 +44,7 @@ export async function generateReport(windowDays: number, sayNote: string) {
 
   await logEvent("report_generated", { window_days: span, checkins: count ?? 0 });
   revalidatePath("/", "layout");
-  redirect(`/report/${data.id}`);
+  return { id: data.id as string };
 }
 
 export async function logAppointmentOutcome(

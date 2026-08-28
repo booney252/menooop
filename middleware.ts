@@ -22,8 +22,11 @@ export async function middleware(request: NextRequest) {
       : NextResponse.redirect(new URL("/", request.url));
   }
 
+  // pages that are just words, and need nothing from the database
+  const STATIC = ["/privacy", "/offline", "/setup"];
+  if (STATIC.some((p) => pathname === p)) return NextResponse.next();
+
   if (!supabaseConfigured()) {
-    if (pathname === "/setup") return NextResponse.next();
     return NextResponse.redirect(new URL("/setup", request.url));
   }
 

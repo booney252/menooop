@@ -19,6 +19,7 @@ export function OutcomeForm({ id, windowEnd }: { id: string; windowEnd: string }
   const [note, setNote] = useState("");
   const [pending, start] = useTransition();
   const [done, setDone] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (done) {
     return (
@@ -90,12 +91,24 @@ export function OutcomeForm({ id, windowEnd }: { id: string; windowEnd: string }
         <div className="flex-1" />
 
         <Reveal delay={400}>
+          {error && (
+            <p className="mb-3 text-center text-[14.5px] leading-relaxed text-[#e0c9c2]">{error}</p>
+          )}
           <Action
             onClick={() =>
               start(async () => {
                 if (!went) return;
-                await logAppointmentOutcome(id, went, note);
-                setDone(true);
+                setError(null);
+                try {
+                  const result = await logAppointmentOutcome(id, went, note);
+                  if ("error" in result && result.error) {
+                    setError(result.error);
+                    return;
+                  }
+                  setDone(true);
+                } catch {
+                  setError("Marlow couldn’t reach the server just then. Try again.");
+                }
               })
             }
             disabled={!went || pending}
