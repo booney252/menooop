@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { Reveal } from "@/components/Reveal";
+import { Wordmark } from "@/components/Wordmark";
 import { sendMagicLink, type SignInState } from "@/app/actions/auth";
 
 export function SignInForm({ next, problem }: { next: string; problem: string | null }) {
@@ -20,14 +21,7 @@ export function SignInForm({ next, problem }: { next: string; problem: string | 
       <div className="relative w-full bg-ink sm:h-[844px] sm:max-h-[calc(100dvh-5rem)] sm:w-[390px] sm:overflow-hidden sm:rounded-[42px] sm:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.85),0_0_0_1px_rgba(180,159,174,0.14)]">
         <div className="flex h-dvh flex-col overflow-y-auto px-7 pt-16 pb-12 sm:h-full">
           <Reveal delay={80}>
-            <p className="display text-[19px] tracking-[0.02em] text-bone">
-              Marlow
-              <span
-                aria-hidden
-                className="ml-[6px] inline-block h-[5px] w-[5px] translate-y-[-3px] rounded-full"
-                style={{ background: "var(--color-figlift)" }}
-              />
-            </p>
+            <Wordmark />
           </Reveal>
 
           {state.sent ? (

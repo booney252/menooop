@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { PigmentStrip } from "@/components/PigmentStrip";
 import { Reveal } from "@/components/Reveal";
+import { Wordmark } from "@/components/Wordmark";
 import { SYMPTOM_BY_KEY, type Stage, type SymptomKey } from "@/lib/symptoms";
 import { dayRange, longDay } from "@/lib/day";
 import type { SymptomSummary } from "@/lib/insights/describe";
@@ -47,13 +48,7 @@ export function ReportDocument({
           <article className="print-page px-7 pt-9 pb-16">
             <Reveal delay={40}>
               <div className="flex items-end justify-between">
-                <p className="display text-[20px] tracking-[0.02em] text-[#2b1a26]">
-                  Marlow
-                  <span
-                    aria-hidden
-                    className="ml-[6px] inline-block h-[5px] w-[5px] translate-y-[-3px] rounded-full bg-fig"
-                  />
-                </p>
+<Wordmark size={16} paper />
                 <p className="paper-label">Symptom record</p>
               </div>
               <div className="mt-2.5 border-t-2" style={{ borderColor: "var(--color-fig)" }} />

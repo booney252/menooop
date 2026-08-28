@@ -40,8 +40,12 @@ export function TabBar({
                   className="flex h-[52px] flex-col items-center justify-center gap-[7px] rounded-2xl"
                 >
                   <span
-                    className="text-[13px] tracking-[0.06em] transition-colors duration-500"
-                    style={{ color: on ? "var(--color-bone)" : "var(--color-dune)" }}
+                    className="text-[11.5px] uppercase transition-colors duration-500"
+                    style={{
+                      color: on ? "var(--color-bone)" : "var(--color-dune)",
+                      letterSpacing: "0.16em",
+                      fontWeight: on ? 600 : 500,
+                    }}
                   >
                     {t.label}
                   </span>

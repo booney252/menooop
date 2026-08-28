@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Wordmark } from "@/components/Wordmark";
 
 export const metadata = { title: "Your data — Marlow" };
 
@@ -6,14 +7,7 @@ export default function Privacy() {
   return (
     <div className="min-h-dvh bg-ink px-7 py-16 sm:flex sm:justify-center">
       <article className="w-full max-w-[34rem]">
-        <p className="display text-[19px] tracking-[0.02em] text-bone">
-          Marlow
-          <span
-            aria-hidden
-            className="ml-[6px] inline-block h-[5px] w-[5px] translate-y-[-3px] rounded-full"
-            style={{ background: "var(--color-figlift)" }}
-          />
-        </p>
+        <Wordmark />
 
         <h1 className="display mt-10 text-[31px] leading-[1.15] text-bone">
           Your data is yours.

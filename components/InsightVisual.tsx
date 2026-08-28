@@ -71,8 +71,12 @@ function Pair({
             />
           </div>
           <p
-            className="mt-1.5 text-[12.5px]"
-            style={{ color: paper ? "#6a5461" : "var(--color-dune)" }}
+            className="mt-2 text-[10.5px] uppercase"
+            style={{
+              color: paper ? "#6a5461" : "var(--color-dune)",
+              letterSpacing: "0.16em",
+              fontWeight: 500,
+            }}
           >
             {row.label}
           </p>

@@ -69,11 +69,11 @@ body {
   line-height: 1.18;
 }
 .label {
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--color-dune);
-  font-weight: 500;
+  font-weight: 600;
 }
 .hair {
   border-color: var(--hair);
@@ -292,10 +292,36 @@ body {
   border-color: #d9cbb9;
 }
 .paper-label {
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #6f5c4e;
   font-weight: 500;
 }
 
+
+
+/* ── Two type pairings, for choosing between ─────────────────────────────────
+   Preview any screen with ?type=a or ?type=b. Only the two faces and their
+   tuning change. The winner moves into @theme and this block comes out.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* A · the packaging — a Didone, the way MARLOW is set on the box */
+[data-type="a"] {
+  --font-display: var(--font-bodoni), Didot, "Times New Roman", serif;
+  --font-body: var(--font-karla), ui-sans-serif, system-ui, sans-serif;
+}
+[data-type="a"] .display {
+  font-weight: 500; /* Didone hairlines need weight to hold on a dark ground */
+  letter-spacing: -0.005em;
+}
+
+/* B · editorial — sturdier on dark, warmer, less severe */
+[data-type="b"] {
+  --font-display: var(--font-dmserif), Georgia, serif;
+  --font-body: var(--font-epilogue), ui-sans-serif, system-ui, sans-serif;
+}
+[data-type="b"] .display {
+  font-weight: 400;
+  letter-spacing: -0.012em;
+}

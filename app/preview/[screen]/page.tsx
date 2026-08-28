@@ -30,10 +30,18 @@ function enabled() {
   return process.env.MARLOW_PREVIEW === "1" && process.env.VERCEL_ENV !== "production";
 }
 
-export default async function Preview({ params }: { params: Promise<{ screen: string }> }) {
+export default async function Preview({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ screen: string }>;
+  searchParams: Promise<{ type?: string }>;
+}) {
   if (!enabled()) notFound();
   const { screen } = await params;
-  return renderScreen(screen, previewHistory(), previewInsights());
+  const { type } = await searchParams;
+  const view = renderScreen(screen, previewHistory(), previewInsights());
+  return type === "a" || type === "b" ? <div data-type={type}>{view}</div> : view;
 }
 
 function renderScreen(

@@ -5,6 +5,7 @@ import { AppShell } from "@/components/AppShell";
 import { MonthArc } from "@/components/MonthArc";
 import { InsightVisual } from "@/components/InsightVisual";
 import { Reveal } from "@/components/Reveal";
+import { Wordmark } from "@/components/Wordmark";
 import { GOOD_THING_LABEL } from "@/lib/symptoms";
 import { daysBetween, longDay, weekdayOf, type Day } from "@/lib/day";
 import type { DayRecord, Insight, Profile } from "@/lib/types";
@@ -31,14 +32,7 @@ export function TodayView({
       <div className="flex min-h-dvh flex-col px-7 pt-14 pb-36 sm:min-h-[844px]">
         <Reveal delay={60}>
           <header className="flex items-baseline justify-between">
-            <p className="display text-[19px] tracking-[0.02em] text-bone">
-              Marlow
-              <span
-                aria-hidden
-                className="ml-[6px] inline-block h-[5px] w-[5px] translate-y-[-3px] rounded-full"
-                style={{ background: "var(--color-figlift)" }}
-              />
-            </p>
+            <Wordmark />
             <p className="text-[13.5px] text-dune">
               {weekdayOf(today)}, {longDay(today).replace(/ \d{4}$/, "")}
             </p>

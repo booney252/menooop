@@ -1,9 +1,11 @@
+import { Wordmark } from "@/components/Wordmark";
+
 /** Shown when the app is running without Supabase keys. Developer-facing. */
 export default function Setup() {
   return (
     <div className="min-h-dvh bg-ink px-7 py-20">
       <div className="mx-auto max-w-[30rem]">
-        <p className="display text-[19px] text-bone">Marlow</p>
+        <Wordmark />
         <h1 className="display mt-8 text-[31px] leading-[1.15] text-bone">
           Not connected yet.
         </h1>

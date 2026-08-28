@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Action, Chip, Dots, Stone } from "@/components/Choice";
 import { Reveal } from "@/components/Reveal";
+import { Wordmark } from "@/components/Wordmark";
 import {
   INTERVENTION_SUGGESTIONS,
   STAGES,
@@ -164,19 +165,6 @@ export function OnboardingFlow() {
 
       {step === "done" && <Done onGo={() => router.replace("/today")} />}
     </Frame>
-  );
-}
-
-function Wordmark() {
-  return (
-    <p className="display text-[19px] tracking-[0.02em] text-bone">
-      Marlow
-      <span
-        aria-hidden
-        className="ml-[6px] inline-block h-[5px] w-[5px] translate-y-[-3px] rounded-full"
-        style={{ background: "var(--color-figlift)" }}
-      />
-    </p>
   );
 }
 

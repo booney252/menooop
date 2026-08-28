@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Wordmark } from "@/components/Wordmark";
 
 export const dynamic = "force-dynamic";
 
@@ -28,14 +29,7 @@ export default function PreviewIndex() {
   return (
     <div className="min-h-dvh bg-ink px-7 py-16">
       <div className="mx-auto max-w-[34rem]">
-        <p className="display text-[19px] tracking-[0.02em] text-bone">
-          Marlow
-          <span
-            aria-hidden
-            className="ml-[6px] inline-block h-[5px] w-[5px] translate-y-[-3px] rounded-full"
-            style={{ background: "var(--color-figlift)" }}
-          />
-        </p>
+        <Wordmark />
         <h1 className="display mt-9 text-[31px] leading-[1.15] text-bone">Design preview</h1>
         <p className="mt-4 text-[16px] leading-[1.7] text-dune">
           Every screen rendered from fixtures, with no database behind it. Narrow the window to
