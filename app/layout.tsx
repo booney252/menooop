@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Instrument_Sans, Newsreader } from "next/font/google";
-import { StoreProvider } from "@/lib/store";
+import { RegisterServiceWorker } from "@/components/RegisterServiceWorker";
 import "./globals.css";
 
 const newsreader = Newsreader({
@@ -18,7 +18,9 @@ const instrument = Instrument_Sans({
 
 export const metadata: Metadata = {
   title: "Marlow",
-  description: "A quiet record of how you’ve actually been.",
+  description: "A quiet record of how you've actually been.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Marlow" },
 };
 
 export const viewport: Viewport = {
@@ -32,7 +34,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${newsreader.variable} ${instrument.variable}`}>
       <body className="grain antialiased">
-        <StoreProvider>{children}</StoreProvider>
+        {children}
+        <RegisterServiceWorker />
       </body>
     </html>
   );

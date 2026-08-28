@@ -1,7 +1,9 @@
 "use client";
 
 import { inkPigment, paperPigment } from "@/lib/pigment";
-import type { Point } from "@/lib/insights";
+import type { Day } from "@/lib/day";
+
+export type StripPoint = { day: Day; value: number | null };
 
 /**
  * One mark a day, oldest on the left. A mark carries the day's weight twice —
@@ -14,7 +16,7 @@ export function PigmentStrip({
   paper = false,
   animate = true,
 }: {
-  points: Point[];
+  points: StripPoint[];
   height?: number;
   paper?: boolean;
   animate?: boolean;
@@ -26,15 +28,14 @@ export function PigmentStrip({
       style={{ height, borderColor: paper ? "#dbcdba" : "var(--hair)" }}
     >
       {points.map((p, i) => {
-        const v = p.value;
-        const share = v === null ? 0.16 : 0.22 + (Math.max(0, Math.min(3, v)) / 3) * 0.78;
+        const share = p.value === null ? 0.16 : 0.22 + (Math.max(0, Math.min(3, p.value)) / 3) * 0.78;
         return (
           <span
-            key={p.date}
+            key={p.day}
             className={`block flex-1 rounded-t-[1px] ${animate ? "soak" : ""}`}
             style={{
               height: `${share * 100}%`,
-              background: tint(v),
+              background: tint(p.value),
               animationDelay: animate ? `${i * 7}ms` : undefined,
             }}
           />

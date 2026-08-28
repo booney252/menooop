@@ -74,6 +74,30 @@ generic prompts, so the first thing she sees is that this thing has read her.
 The disclaimer sits under the composer permanently, small and calm, because it
 is the one line that has to be there every time.
 
+## Carried into the production build
+
+The palette, type, signature device and voice are unchanged from the design
+demo — that build won the aesthetic and this one does not drift from it. What
+changed is what sits behind them.
+
+**Today stayed a glance.** The insight card grew a supporting visual, so the
+reasoning behind an insight moved to Patterns and the done-for-today card lost
+its list of severity ratings. Playing five ratings back at her reads like an
+audit, which is the one thing that screen must never do. It now reflects the
+good thing back and stops.
+
+**Nothing quantitative appears without a sentence.** Every strip, every
+comparison bar, every mark has plain language next to it. Where there is too
+little data, the sentence says so — "only four days logged so far, too few to
+read anything into" — rather than drawing a shape out of nothing.
+
+**Insight language is observational.** "Your logs show", "you have tended to",
+never "you have". The engine tests assert this, along with the tone rules, so
+the voice cannot quietly drift as rules get added.
+
+**The appointment prompt is small enough to ignore.** One line and a link,
+below the primary action, asked once per report and dismissible for good.
+
 ## Rules held throughout
 
 - No photography of any kind, and no emoji as UI. Texture comes from a faint
@@ -87,6 +111,10 @@ is the one line that has to be there every time.
 - Marlow never opens an answer with a paragraph of empathy before the point,
   never uses bullet lists unless asked for options, and never says journey,
   warrior, thrive, or "the change".
+- No streaks, no badges, no guilt. A missed day gets silence; a return gets a
+  soft welcome and no accounting of what was missed.
+- Nothing quantitative ships without a plain-language sentence beside it, and
+  no pattern is claimed that the thresholds do not support.
 - One primary action per screen. If there are two, one gets cut.
 - Motion is slow settles and fades only, and it respects `prefers-reduced-motion`.
 - Tap targets are 44px minimum, focus is always visible, and every colour pair

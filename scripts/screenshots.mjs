@@ -1,101 +1,56 @@
-import { chromium } from 'playwright';
+import { chromium } from "playwright";
+import fs from "node:fs";
 
-const OUT = process.argv[2];
-const base = 'http://localhost:3100';
+const OUT = process.argv[2] ?? "./screenshots";
+const base = process.env.SHOT_BASE ?? "http://localhost:3100";
+fs.mkdirSync(OUT, { recursive: true });
 
-const b = await chromium.launch();
-const ctx = await b.newContext({
+const SCREENS = [
+  ["01-sign-in", "/sign-in"],
+  ["02-onboarding", "/preview/onboarding"],
+  ["03-today", "/preview/today"],
+  ["04-today-done", "/preview/today-done"],
+  ["05-today-appointment", "/preview/today-appointment"],
+  ["06-check-in", "/preview/check-in"],
+  ["07-patterns", "/preview/patterns"],
+  ["08-report-cover", "/preview/report"],
+  ["09-report-paper", "/preview/report-paper"],
+  ["10-ask", "/preview/ask"],
+  ["11-settings", "/preview/settings"],
+  ["12-privacy", "/privacy"],
+];
+
+const FULL = new Set(["07-patterns", "09-report-paper", "11-settings", "12-privacy"]);
+
+const browser = await chromium.launch();
+const ctx = await browser.newContext({
   viewport: { width: 390, height: 844 },
   deviceScaleFactor: 2,
   isMobile: true,
   hasTouch: true,
 });
-const p = await ctx.newPage();
+const page = await ctx.newPage();
 
-async function shot(name, url, fn) {
-  await p.goto(base + url, { waitUntil: 'networkidle' });
-  await p.waitForTimeout(1200);
-  if (fn) await fn(p);
-  await p.waitForTimeout(1900);
-  await p.screenshot({ path: `${OUT}/${name}.png` });
-  console.log('shot', name);
-}
-
-// fresh: onboarding
-await shot('01-onboarding-door', '/onboarding');
-await shot('02-onboarding-stage', '/onboarding', async (p) => {
-  await p.getByRole('button', { name: 'Begin' }).click();
-});
-await shot('03-onboarding-symptoms', '/onboarding', async (p) => {
-  await p.getByRole('button', { name: 'Begin' }).click();
-  await p.waitForTimeout(900);
-  await p.getByRole('button', { name: /Unpredictable/ }).first().click();
-  await p.waitForTimeout(700);
-  for (const s of ['Waking at 3am', 'Anxiety', 'Brain fog', 'Hot flushes', 'Flat energy']) {
-    await p.getByRole('button', { name: s, exact: true }).click();
-    await p.waitForTimeout(120);
-  }
-});
-await shot('04-onboarding-taking', '/onboarding', async (p) => {
-  await p.getByRole('button', { name: 'Begin' }).click();
-  await p.waitForTimeout(900);
-  await p.getByRole('button', { name: /Unpredictable/ }).first().click();
-  await p.waitForTimeout(700);
-  for (const s of ['Waking at 3am', 'Anxiety', 'Brain fog']) {
-    await p.getByRole('button', { name: s, exact: true }).click();
-    await p.waitForTimeout(100);
-  }
-  await p.getByRole('button', { name: /Continue with/ }).click();
-  await p.waitForTimeout(1200);
-  await p.getByRole('button', { name: /considering/ }).click();
-  await p.getByRole('button', { name: 'Magnesium glycinate' }).click();
-});
-
-await shot('05-today', '/today');
-await shot('06-checkin', '/check-in');
-await shot('07-checkin-note', '/check-in', async (p) => {
-  for (let i = 0; i < 5; i++) {
-    await p.getByRole('button', { name: /Barely there|Noticeable/ }).first().click();
-    await p.waitForTimeout(560);
-  }
-});
-await shot('08-checkin-saved', '/check-in', async (p) => {
-  for (let i = 0; i < 5; i++) {
-    await p.getByRole('button', { name: /Noticeable/ }).first().click();
-    await p.waitForTimeout(560);
-  }
-  await p.getByRole('button', { name: 'Save today' }).click();
-});
-await shot('09-today-done', '/today');
-await shot('10-patterns', '/patterns');
-await shot('11-report-cover', '/report');
-await shot('12-report-paper', '/report', async (p) => {
-  await p.getByRole('button', { name: 'Prepare the report' }).click();
-});
-// the scroll lives in an inner element, so release it before a full-length shot
 const unroll = () =>
-  p.evaluate(() => {
-    document.querySelectorAll('*').forEach((el) => {
+  page.evaluate(() => {
+    document.querySelectorAll("*").forEach((el) => {
       const s = getComputedStyle(el);
-      if (s.overflowY === 'auto' || s.overflowY === 'scroll') {
-        el.style.height = 'auto';
-        el.style.overflow = 'visible';
+      if (s.overflowY === "auto" || s.overflowY === "scroll") {
+        el.style.height = "auto";
+        el.style.overflow = "visible";
       }
     });
   });
 
-await p.goto(base + '/report', { waitUntil: 'networkidle' });
-await p.waitForTimeout(1000);
-await p.getByRole('button', { name: 'Prepare the report' }).click();
-await p.waitForTimeout(2600);
-await unroll();
-await p.waitForTimeout(300);
-await p.screenshot({ path: `${OUT}/13-report-full.png`, fullPage: true });
+for (const [name, path] of SCREENS) {
+  await page.goto(base + path, { waitUntil: "networkidle" });
+  await page.waitForTimeout(2200);
+  if (FULL.has(name)) {
+    await unroll();
+    await page.waitForTimeout(300);
+  }
+  await page.screenshot({ path: `${OUT}/${name}.png`, fullPage: FULL.has(name) });
+  console.log("shot", name);
+}
 
-await p.goto(base + '/patterns', { waitUntil: 'networkidle' });
-await p.waitForTimeout(2600);
-await unroll();
-await p.waitForTimeout(300);
-await p.screenshot({ path: `${OUT}/14-patterns-full.png`, fullPage: true });
-
-await b.close();
+await browser.close();
