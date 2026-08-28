@@ -23,9 +23,15 @@ the only crop her face is in — and becomes a 16:9 band above 640px, positioned
 at 78% so it lands on the hands, the glass and the jar. Everything else is used
 at its native ratio, uncropped.
 
-Files here are ~1280px on the long edge and 100–375KB each, which is sized for
-the page rather than for print. If you ever swap in the full-resolution
-masters, keep the same nine names and the layout will not need touching.
+Each file is sized to what its own slot renders at 2x, not to one blanket
+number — 2880px for the two full-bleed shots, 2160px for the flat lay, and
+960–1120px for the six that never render wider than about half a column. All
+nine together come to roughly 1.7MB.
+
+To swap in new photography: drop the masters here under these nine names, then
+run `node scripts/optimize-photos.mjs` to see what it would do and
+`--write` to apply. The targets live in that script, so if the layout ever
+changes, change them there.
 
 There is deliberately no back-of-pack or supplement-facts image. The dose table
 is built in code — see `components/site/DoseLine.tsx`.
