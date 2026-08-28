@@ -3,30 +3,41 @@
  * to be buildable (and the design previewable) on a machine with no keys.
  */
 
+/**
+ * Supabase renamed its keys: `anon` is now the publishable key
+ * (sb_publishable_…) and `service_role` is now the secret key (sb_secret_…).
+ * Both namings are accepted so an older project keeps working, but the
+ * publishable/secret names are the ones the dashboard shows today.
+ */
+const publishableKey = () =>
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+const secretKey = () =>
+  process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+
 export function supabaseConfigured(): boolean {
-  return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && publishableKey());
 }
 
 export function supabaseEnv(): { url: string; anonKey: string } {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !anonKey) {
+  const key = publishableKey();
+  if (!url || !key) {
     throw new Error(
       "Supabase is not configured. Copy .env.example to .env.local and set " +
-        "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY."
+        "NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY."
     );
   }
-  return { url, anonKey };
+  return { url, anonKey: key };
 }
 
 export function serviceRoleKey(): string {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const key = secretKey();
   if (!key) {
     throw new Error(
-      "SUPABASE_SERVICE_ROLE_KEY is not set. It is needed for account deletion " +
-        "and the admin page, and must never be exposed to the browser."
+      "SUPABASE_SECRET_KEY is not set. It is needed for account deletion and " +
+        "the admin page, and must never be exposed to the browser."
     );
   }
   return key;

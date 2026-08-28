@@ -19,11 +19,18 @@ Work through it in order. The four places people lose an afternoon are marked
 3. Open **Table Editor** and check you have: profiles, symptoms, checkins,
    checkin_symptoms, interventions, insights, chat_messages, reports, events.
    The `symptoms` table should already have 11 rows.
-4. Open **Project Settings → API** and copy three values:
-   - Project URL
-   - `anon` `public` key
-   - `service_role` `secret` key — this one bypasses all security. It goes on
-     the server only, never in a browser, never in a repo.
+4. Open **Project Settings → API keys** and copy the two keys:
+   - **Publishable key**, `sb_publishable_…` — safe in a browser. Row-level
+     security is what protects the data, not this key.
+   - **Secret key**, `sb_secret_…` — click the eye to reveal it. This one
+     bypasses all security. Server only, never in a browser, never committed.
+
+   Then **Project Settings → Data API** for the **Project URL**, which looks
+   like `https://abcdefghijklmnop.supabase.co`. It is on a different page from
+   the keys, which is easy to miss.
+
+   > On older projects these were called the `anon` and `service_role` keys.
+   > Same things, renamed. Marlow accepts either naming.
 
 > **Gotcha — email limits.** Supabase's built-in email sender is capped at a
 > couple of messages an hour on the free tier. Marlow signs people in with
@@ -57,9 +64,9 @@ it cannot answer.
 
    | Name | Value |
    | --- | --- |
-   | `NEXT_PUBLIC_SUPABASE_URL` | from step 1 |
-   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | from step 1 |
-   | `SUPABASE_SERVICE_ROLE_KEY` | from step 1 |
+   | `NEXT_PUBLIC_SUPABASE_URL` | the Project URL |
+   | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | `sb_publishable_…` |
+   | `SUPABASE_SECRET_KEY` | `sb_secret_…` |
    | `ANTHROPIC_API_KEY` | from step 2, if you did it |
    | `NEXT_PUBLIC_SITE_URL` | your final URL, e.g. `https://marlow.app` |
    | `MARLOW_FOUNDER_EMAILS` | your email, for `/admin` |
@@ -120,7 +127,7 @@ real data:
 npm run seed:demo -- demo@your-domain.com
 ```
 
-Needs `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in your local
+Needs `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SECRET_KEY` in your local
 `.env.local`. It writes sixty days of realistic history and refuses to touch any
 account not tagged as a demo. Sign in as that address to see it.
 
