@@ -92,7 +92,7 @@ export function OutcomeForm({ id, windowEnd }: { id: string; windowEnd: string }
 
         <Reveal delay={400}>
           {error && (
-            <p className="mb-3 text-center text-[14.5px] leading-relaxed text-[#e0c9c2]">{error}</p>
+            <p className="mb-3 text-center text-[14.5px] leading-relaxed text-[#ebccda]">{error}</p>
           )}
           <Action
             onClick={() =>
@@ -136,7 +136,7 @@ export function OutcomeForm({ id, windowEnd }: { id: string; windowEnd: string }
 function Frame({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-dvh bg-ink sm:flex sm:items-center sm:justify-center sm:p-10">
-      <div className="relative w-full bg-ink sm:h-[844px] sm:max-h-[calc(100dvh-5rem)] sm:w-[390px] sm:overflow-hidden sm:rounded-[42px] sm:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.85),0_0_0_1px_rgba(162,148,138,0.12)]">
+      <div className="relative w-full bg-ink sm:h-[844px] sm:max-h-[calc(100dvh-5rem)] sm:w-[390px] sm:overflow-hidden sm:rounded-[42px] sm:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.85),0_0_0_1px_rgba(180,159,174,0.14)]">
         <div className="flex h-dvh flex-col overflow-y-auto sm:h-full">{children}</div>
       </div>
     </div>

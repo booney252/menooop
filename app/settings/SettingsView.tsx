@@ -26,7 +26,7 @@ export function SettingsView({
 }) {
   return (
     <div className="min-h-dvh bg-ink sm:flex sm:items-center sm:justify-center sm:p-10">
-      <div className="relative w-full bg-ink sm:h-[844px] sm:max-h-[calc(100dvh-5rem)] sm:w-[390px] sm:overflow-hidden sm:rounded-[42px] sm:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.85),0_0_0_1px_rgba(162,148,138,0.12)]">
+      <div className="relative w-full bg-ink sm:h-[844px] sm:max-h-[calc(100dvh-5rem)] sm:w-[390px] sm:overflow-hidden sm:rounded-[42px] sm:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.85),0_0_0_1px_rgba(180,159,174,0.14)]">
         <div className="h-dvh overflow-y-auto px-7 pt-14 pb-16 sm:h-full">
           <Reveal delay={40}>
             <div className="flex items-baseline justify-between">
@@ -129,7 +129,7 @@ function InterventionsSection({ interventions }: { interventions: Intervention[]
             className="flex items-center gap-3 rounded-[16px] border hair bg-clay px-4 py-3"
           >
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[16px] text-[#ded3c7]">{i.name}</span>
+              <span className="block truncate text-[16px] text-[#e4d9e0]">{i.name}</span>
               <span className="block text-[13px] text-dune">Since {longDay(i.started_on)}</span>
             </span>
             <button
@@ -189,7 +189,7 @@ function InterventionsSection({ interventions }: { interventions: Intervention[]
               setName("");
             })
           }
-          className="shrink-0 rounded-[16px] border hair px-5 text-[15px] text-[#ded3c7] disabled:opacity-40"
+          className="shrink-0 rounded-[16px] border hair px-5 text-[15px] text-[#e4d9e0] disabled:opacity-40"
           style={{ minHeight: 48 }}
         >
           Add
@@ -231,7 +231,7 @@ function NudgeSection({ profile }: { profile: Profile }) {
           className="h-[7px] w-[7px] shrink-0 rounded-full"
           style={{ background: enabled ? "var(--color-figlift)" : "var(--color-wash)" }}
         />
-        <span className="text-[16px] text-[#ded3c7]">One email a day, at most</span>
+        <span className="text-[16px] text-[#e4d9e0]">One email a day, at most</span>
       </button>
 
       {enabled && (
@@ -270,7 +270,7 @@ function DataSection() {
     <Card title="Your data">
       <a
         href="/api/export"
-        className="flex w-full items-center justify-center rounded-[16px] border hair text-[16px] text-[#ded3c7]"
+        className="flex w-full items-center justify-center rounded-[16px] border hair text-[16px] text-[#e4d9e0]"
         style={{ minHeight: 52 }}
       >
         Download everything
@@ -299,7 +299,7 @@ function DangerSection() {
       <form action={signOut}>
         <button
           type="submit"
-          className="flex w-full items-center justify-center rounded-[16px] border hair text-[16px] text-[#ded3c7]"
+          className="flex w-full items-center justify-center rounded-[16px] border hair text-[16px] text-[#e4d9e0]"
           style={{ minHeight: 52 }}
         >
           Sign out
@@ -334,7 +334,7 @@ function DangerSection() {
             className="w-full rounded-[14px] border hair bg-ink px-4 text-[16px] text-bone"
             style={{ minHeight: 48 }}
           />
-          {error && <p className="mt-3 text-[14px] leading-relaxed text-[#e0c9c2]">{error}</p>}
+          {error && <p className="mt-3 text-[14px] leading-relaxed text-[#ebccda]">{error}</p>}
           <div className="mt-4 flex gap-2.5">
             <button
               type="button"
@@ -343,7 +343,7 @@ function DangerSection() {
                 setConfirm("");
                 setError(null);
               }}
-              className="flex-1 rounded-[14px] border hair text-[15px] text-[#ded3c7]"
+              className="flex-1 rounded-[14px] border hair text-[15px] text-[#e4d9e0]"
               style={{ minHeight: 48 }}
             >
               Keep it

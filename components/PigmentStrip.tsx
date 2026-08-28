@@ -25,7 +25,7 @@ export function PigmentStrip({
   return (
     <div
       className="flex w-full items-end gap-[2px] border-b"
-      style={{ height, borderColor: paper ? "#dbcdba" : "var(--hair)" }}
+      style={{ height, borderColor: paper ? "#ddcfd9" : "var(--hair)" }}
     >
       {points.map((p, i) => {
         const share = p.value === null ? 0.16 : 0.22 + (Math.max(0, Math.min(3, p.value)) / 3) * 0.78;

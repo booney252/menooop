@@ -123,7 +123,7 @@ export function OnboardingFlow() {
           footer={
             <>
               {error && (
-                <p className="mb-3 text-center text-[14.5px] leading-relaxed text-[#e0c9c2]">
+                <p className="mb-3 text-center text-[14.5px] leading-relaxed text-[#ebccda]">
                   {error}
                 </p>
               )}
@@ -195,7 +195,7 @@ function Door({ onNext }: { onNext: () => void }) {
           </h1>
         </Reveal>
         <Reveal delay={520}>
-          <p className="mt-7 max-w-[19rem] text-[17px] leading-[1.7] text-[#cfc3b7]">
+          <p className="mt-7 max-w-[19rem] text-[17px] leading-[1.7] text-[#dcd0d8]">
             Marlow needs to know roughly where you are and what’s been loudest. Nothing here is
             fixed — you can change all of it later.
           </p>
@@ -254,7 +254,7 @@ function Done({ onGo }: { onGo: () => void }) {
           <h2 className="display text-[36px] leading-[1.12] text-bone">That’s everything.</h2>
         </Reveal>
         <Reveal delay={560}>
-          <p className="mt-7 max-w-[19rem] text-[17px] leading-[1.7] text-[#cfc3b7]">
+          <p className="mt-7 max-w-[19rem] text-[17px] leading-[1.7] text-[#dcd0d8]">
             From here Marlow asks a handful of questions a day and nothing more. It takes about
             fifteen seconds.
           </p>
@@ -275,7 +275,7 @@ function Done({ onGo }: { onGo: () => void }) {
 function Frame({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-dvh bg-ink sm:flex sm:items-center sm:justify-center sm:p-10">
-      <div className="relative w-full bg-ink sm:h-[844px] sm:max-h-[calc(100dvh-5rem)] sm:w-[390px] sm:overflow-hidden sm:rounded-[42px] sm:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.85),0_0_0_1px_rgba(162,148,138,0.12)]">
+      <div className="relative w-full bg-ink sm:h-[844px] sm:max-h-[calc(100dvh-5rem)] sm:w-[390px] sm:overflow-hidden sm:rounded-[42px] sm:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.85),0_0_0_1px_rgba(180,159,174,0.14)]">
         <div className="flex h-dvh flex-col overflow-y-auto sm:h-full">{children}</div>
       </div>
     </div>

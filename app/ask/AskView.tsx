@@ -134,7 +134,7 @@ export function AskView({
                     <button
                       type="button"
                       onClick={() => send(q)}
-                      className="w-full rounded-[18px] border hair bg-clay px-5 py-4 text-left text-[16px] leading-snug text-[#ded3c7]"
+                      className="w-full rounded-[18px] border hair bg-clay px-5 py-4 text-left text-[16px] leading-snug text-[#e4d9e0]"
                       style={{ minHeight: 58 }}
                     >
                       {q}

@@ -176,11 +176,13 @@ function SymptomStep({
               style={{
                 minHeight: 66,
                 animationDelay: `${260 + n * 70}ms`,
-                background: `color-mix(in srgb, var(--color-figlift) ${Math.round(
+                // ramps to the lid plum rather than the jar lilac: these are
+                // large surfaces with a label on them, and cream has to hold
+                background: `color-mix(in srgb, var(--color-fig) ${Math.round(
                   depth(shade) * 100
                 )}%, var(--color-wash))`,
                 boxShadow: on ? "inset 0 0 0 1.5px var(--color-bone)" : "none",
-                color: on ? "var(--color-bone)" : "#e2d8cd",
+                color: on ? "var(--color-bone)" : "#ebe1e6",
                 transform: on ? "scale(1.012)" : "none",
               }}
             >
@@ -303,13 +305,13 @@ function NoteStep({
                 background: periodStarted ? "var(--color-figlift)" : "var(--color-wash)",
               }}
             />
-            <span className="text-[16px] text-[#ded3c7]">My period started today</span>
+            <span className="text-[16px] text-[#e4d9e0]">My period started today</span>
           </button>
         </Reveal>
       )}
 
       <div className="flex-1" />
-      {error && <p className="mb-3 text-[14.5px] leading-relaxed text-[#e0c9c2]">{error}</p>}
+      {error && <p className="mb-3 text-[14.5px] leading-relaxed text-[#ebccda]">{error}</p>}
       <Reveal delay={420}>
         <Action onClick={onSave} disabled={saving}>
           {saving ? "Saving…" : "Save today"}
@@ -349,16 +351,16 @@ function Saved({ goodThings }: { goodThings: string[] }) {
 
 function Frame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-dvh bg-[#151210] sm:flex sm:items-center sm:justify-center sm:p-10">
+    <div className="min-h-dvh bg-[#170c13] sm:flex sm:items-center sm:justify-center sm:p-10">
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 hidden sm:block"
         style={{
           background:
-            "radial-gradient(60rem 40rem at 28% 18%, rgba(123,75,87,0.16), transparent 62%)",
+            "radial-gradient(60rem 40rem at 28% 18%, rgba(109,37,68,0.30), transparent 62%)",
         }}
       />
-      <div className="relative w-full bg-ink sm:h-[844px] sm:max-h-[calc(100dvh-5rem)] sm:w-[390px] sm:overflow-hidden sm:rounded-[42px] sm:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.85),0_0_0_1px_rgba(162,148,138,0.12)]">
+      <div className="relative w-full bg-ink sm:h-[844px] sm:max-h-[calc(100dvh-5rem)] sm:w-[390px] sm:overflow-hidden sm:rounded-[42px] sm:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.85),0_0_0_1px_rgba(180,159,174,0.14)]">
         <div className="flex h-dvh flex-col overflow-y-auto sm:h-full">{children}</div>
       </div>
     </div>

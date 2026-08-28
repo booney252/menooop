@@ -26,11 +26,25 @@ export function neutralQuestions(
     .sort((a, b) => b.summary.average - a.summary.average)
     .slice(0, 3);
 
-  // Exact counts rather than a weekly average: more use to a clinician, and
-  // it stops three questions in a row reading like the same sentence.
-  const questions = ranked.map(({ key, summary }) => {
-    const s = SYMPTOM_BY_KEY[key];
-    return `My ${s.phrase} ${verb(key, "has", "have")} been noticeable or worse on ${summary.felt} of the ${summary.logged} days I logged over ${spanPhrase(span)}. What are my options?`;
+  // Exact counts rather than a weekly average — more use to a clinician. And
+  // where two symptoms ran at the same frequency, they share a question:
+  // asking the same thing three times with a different noun wastes the few
+  // minutes she gets, and reads like a form rather than like her.
+  const grouped = new Map<string, { keys: SymptomKey[]; felt: number; logged: number }>();
+  for (const { key, summary } of ranked) {
+    const bucket = `${summary.felt}/${summary.logged}`;
+    const entry = grouped.get(bucket) ?? { keys: [], felt: summary.felt, logged: summary.logged };
+    entry.keys.push(key);
+    grouped.set(bucket, entry);
+  }
+
+  const questions = [...grouped.values()].map(({ keys, felt, logged }) => {
+    const phrases = keys.map((k) => SYMPTOM_BY_KEY[k].phrase);
+    if (keys.length === 1) {
+      return `My ${phrases[0]} ${verb(keys[0], "has", "have")} been noticeable or worse on ${felt} of the ${logged} days I logged. What are my options?`;
+    }
+    const list = `${phrases.slice(0, -1).join(", ")} and ${phrases[phrases.length - 1]}`;
+    return `My ${list} have each been noticeable or worse on ${felt} of the ${logged} days I logged. What are my options?`;
   });
 
   const active = interventions.filter((i) => !i.ended_on);

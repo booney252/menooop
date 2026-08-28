@@ -127,7 +127,7 @@ export default async function Admin() {
                 </tr>
               )}
               {rows.map(([week, c]) => (
-                <tr key={week} className="border-b hair text-[#ded3c7]">
+                <tr key={week} className="border-b hair text-[#e4d9e0]">
                   <td className="py-2.5 pr-4">{week}</td>
                   <td className="py-2.5 pr-4">{c.size}</td>
                   <td className="py-2.5 pr-4">{pct(c.d7, c.matureD7)}</td>

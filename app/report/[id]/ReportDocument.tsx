@@ -27,8 +27,8 @@ export function ReportDocument({
   const past = interventions.filter((i) => i.ended_on);
 
   return (
-    <div className="report-shell min-h-dvh bg-[#151210] sm:flex sm:items-center sm:justify-center sm:p-10">
-      <div className="report-frame relative w-full sm:h-[844px] sm:max-h-[calc(100dvh-5rem)] sm:w-[390px] sm:overflow-hidden sm:rounded-[42px] sm:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.85),0_0_0_1px_rgba(162,148,138,0.12)]">
+    <div className="report-shell min-h-dvh bg-[#170c13] sm:flex sm:items-center sm:justify-center sm:p-10">
+      <div className="report-frame relative w-full sm:h-[844px] sm:max-h-[calc(100dvh-5rem)] sm:w-[390px] sm:overflow-hidden sm:rounded-[42px] sm:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.85),0_0_0_1px_rgba(180,159,174,0.14)]">
         <div className="report-scroll paper h-dvh overflow-y-auto sm:h-full">
           <div className="no-print sticky top-0 z-30 flex items-center justify-between border-b paper-rule bg-bone/90 px-5 py-2.5 backdrop-blur">
             <Link href="/report" className="-ml-2 px-2 text-[15px] paper-dim" style={{ minHeight: 44 }}>
@@ -47,7 +47,7 @@ export function ReportDocument({
           <article className="print-page px-7 pt-9 pb-16">
             <Reveal delay={40}>
               <div className="flex items-end justify-between">
-                <p className="display text-[20px] tracking-[0.02em] text-[#2a2320]">
+                <p className="display text-[20px] tracking-[0.02em] text-[#2b1a26]">
                   Marlow
                   <span
                     aria-hidden
@@ -60,7 +60,7 @@ export function ReportDocument({
             </Reveal>
 
             <Reveal delay={160}>
-              <h1 className="doc-title display mt-8 text-[29px] leading-[1.14] text-[#2a2320]">
+              <h1 className="doc-title display mt-8 text-[29px] leading-[1.14] text-[#2b1a26]">
                 A record of my
                 <br />
                 symptoms
@@ -73,7 +73,7 @@ export function ReportDocument({
             {report.say_note && (
               <Reveal delay={260}>
                 <p className="paper-label mt-10">What I want to say</p>
-                <p className="doc-lead mt-3 text-[16.5px] leading-[1.7] text-[#2a2320]">
+                <p className="doc-lead mt-3 text-[16.5px] leading-[1.7] text-[#2b1a26]">
                   {report.say_note}
                 </p>
               </Reveal>
@@ -92,7 +92,7 @@ export function ReportDocument({
                 <Reveal key={key} delay={420 + n * 60}>
                   <div>
                     <div className="flex items-baseline justify-between gap-3">
-                      <h2 className="doc-rowname text-[16.5px] text-[#2a2320]">
+                      <h2 className="doc-rowname text-[16.5px] text-[#2b1a26]">
                         {SYMPTOM_BY_KEY[key].label}
                       </h2>
                     </div>
@@ -133,7 +133,7 @@ export function ReportDocument({
                   {notes.map((n) => (
                     <li
                       key={n.day}
-                      className="doc-quote display text-[16.5px] italic leading-relaxed text-[#3a302b]"
+                      className="doc-quote display text-[16.5px] italic leading-relaxed text-[#3a2833]"
                     >
                       &ldquo;{n.note}&rdquo;
                     </li>
@@ -148,7 +148,7 @@ export function ReportDocument({
                 {questions.map((q, i) => (
                   <li key={q} className="flex gap-4">
                     <span className="display shrink-0 text-[17px] text-fig">{i + 1}</span>
-                    <span className="doc-q text-[16px] leading-[1.6] text-[#2a2320]">{q}</span>
+                    <span className="doc-q text-[16px] leading-[1.6] text-[#2b1a26]">{q}</span>
                   </li>
                 ))}
               </ol>
@@ -174,7 +174,7 @@ export function ReportDocument({
 function Tried({ label, value }: { label: string; value: string }) {
   return (
     <li className="doc-tried flex items-baseline justify-between gap-4 border-b paper-rule pb-2.5">
-      <span className="shrink-0 text-[16px] text-[#2a2320]">{label}</span>
+      <span className="shrink-0 text-[16px] text-[#2b1a26]">{label}</span>
       <span className="text-right text-[13.5px] paper-dim">{value}</span>
     </li>
   );

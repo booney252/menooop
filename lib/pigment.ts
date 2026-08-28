@@ -14,6 +14,6 @@ export function inkPigment(value: number | null | undefined): string {
 }
 
 export function paperPigment(value: number | null | undefined): string {
-  if (value === null || value === undefined) return "#eae0d2";
-  return `color-mix(in srgb, var(--color-fig) ${Math.round(depth(value) * 100)}%, #e9dfd1)`;
+  if (value === null || value === undefined) return "#e9dce3";
+  return `color-mix(in srgb, var(--color-fig) ${Math.round(depth(value) * 100)}%, #e9dce3)`;
 }

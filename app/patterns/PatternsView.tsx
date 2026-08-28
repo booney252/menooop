@@ -119,7 +119,7 @@ export function PatternsView({
                 return (
                   <Reveal key={key} delay={520 + n * 90}>
                     <div className="flex items-baseline justify-between gap-3">
-                      <h3 className="text-[17px] text-[#ded3c7]">{symptomHeading(key)}</h3>
+                      <h3 className="text-[17px] text-[#e4d9e0]">{symptomHeading(key)}</h3>
                       {trend && <span className="text-[13.5px] text-dune">{trend}</span>}
                     </div>
                     <div className="mt-3.5">

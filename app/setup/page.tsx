@@ -13,7 +13,7 @@ export default function Setup() {
           <code className="text-bone">.env.local</code>, fill in the two Supabase values, and
           restart.
         </p>
-        <pre className="mt-7 overflow-x-auto rounded-[16px] border hair bg-clay px-5 py-4 text-[13.5px] leading-relaxed text-[#ded3c7]">
+        <pre className="mt-7 overflow-x-auto rounded-[16px] border hair bg-clay px-5 py-4 text-[13.5px] leading-relaxed text-[#e4d9e0]">
 {`NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=`}
         </pre>

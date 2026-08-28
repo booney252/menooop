@@ -60,7 +60,7 @@ function Pair({
         <div key={i}>
           <div
             className="h-[7px] w-full overflow-hidden rounded-full"
-            style={{ background: paper ? "#e9dfd1" : "var(--color-wash)" }}
+            style={{ background: paper ? "#e9dce3" : "var(--color-wash)" }}
           >
             <div
               className="h-full rounded-full"
@@ -72,7 +72,7 @@ function Pair({
           </div>
           <p
             className="mt-1.5 text-[12.5px]"
-            style={{ color: paper ? "#6e5c50" : "var(--color-dune)" }}
+            style={{ color: paper ? "#6a5461" : "var(--color-dune)" }}
           >
             {row.label}
           </p>
@@ -97,7 +97,7 @@ function Run({ count, filled, paper }: { count: number; filled: number; paper: b
                   ? "var(--color-fig)"
                   : "var(--color-figlift)"
                 : paper
-                  ? "#e2d6c6"
+                  ? "#e4d7df"
                   : "var(--color-wash)",
           }}
         />

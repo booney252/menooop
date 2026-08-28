@@ -18,7 +18,7 @@ export default function Privacy() {
         <h1 className="display mt-10 text-[31px] leading-[1.15] text-bone">
           Your data is yours.
         </h1>
-        <p className="mt-6 text-[17px] leading-[1.7] text-[#cfc3b7]">
+        <p className="mt-6 text-[17px] leading-[1.7] text-[#dcd0d8]">
           What you write in Marlow is some of the most personal information there is. Here is
           exactly what happens to it, in plain words.
         </p>

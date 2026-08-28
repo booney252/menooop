@@ -157,7 +157,7 @@ function DoneForToday({ record }: { record: DayRecord }) {
       <p className="display mt-4 text-[20px] leading-snug italic text-bone">{upNote}</p>
 
       {record.note && (
-        <p className="mt-4 border-t hair pt-4 text-[15.5px] leading-relaxed text-[#ded3c7]">
+        <p className="mt-4 border-t hair pt-4 text-[15.5px] leading-relaxed text-[#e4d9e0]">
           {record.note}
         </p>
       )}
@@ -173,7 +173,7 @@ function AppointmentPrompt({ id }: { id: string }) {
         Did you have your appointment?{" "}
         <Link
           href={`/report/outcome/${id}`}
-          className="text-[#ded3c7] underline underline-offset-4"
+          className="text-[#e4d9e0] underline underline-offset-4"
         >
           Tell Marlow how it went
         </Link>

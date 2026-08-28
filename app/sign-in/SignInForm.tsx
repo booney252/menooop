@@ -8,16 +8,16 @@ export function SignInForm({ next, problem }: { next: string; problem: string | 
   const [state, action, pending] = useActionState<SignInState, FormData>(sendMagicLink, {});
 
   return (
-    <div className="min-h-dvh bg-[#151210] sm:flex sm:items-center sm:justify-center sm:p-10">
+    <div className="min-h-dvh bg-[#170c13] sm:flex sm:items-center sm:justify-center sm:p-10">
       <div
         aria-hidden
         className="pointer-events-none fixed inset-0 hidden sm:block"
         style={{
           background:
-            "radial-gradient(60rem 40rem at 28% 18%, rgba(123,75,87,0.16), transparent 62%)",
+            "radial-gradient(60rem 40rem at 28% 18%, rgba(109,37,68,0.30), transparent 62%)",
         }}
       />
-      <div className="relative w-full bg-ink sm:h-[844px] sm:max-h-[calc(100dvh-5rem)] sm:w-[390px] sm:overflow-hidden sm:rounded-[42px] sm:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.85),0_0_0_1px_rgba(162,148,138,0.12)]">
+      <div className="relative w-full bg-ink sm:h-[844px] sm:max-h-[calc(100dvh-5rem)] sm:w-[390px] sm:overflow-hidden sm:rounded-[42px] sm:shadow-[0_50px_120px_-30px_rgba(0,0,0,0.85),0_0_0_1px_rgba(180,159,174,0.14)]">
         <div className="flex h-dvh flex-col overflow-y-auto px-7 pt-16 pb-12 sm:h-full">
           <Reveal delay={80}>
             <p className="display text-[19px] tracking-[0.02em] text-bone">
@@ -43,7 +43,7 @@ export function SignInForm({ next, problem }: { next: string; problem: string | 
                   </h1>
                 </Reveal>
                 <Reveal delay={500}>
-                  <p className="mt-7 max-w-[19rem] text-[17px] leading-[1.7] text-[#cfc3b7]">
+                  <p className="mt-7 max-w-[19rem] text-[17px] leading-[1.7] text-[#dcd0d8]">
                     Normal bloodwork and a body that no longer feels like yours can both be true
                     at once.
                   </p>
@@ -74,7 +74,7 @@ export function SignInForm({ next, problem }: { next: string; problem: string | 
                     style={{ minHeight: 56 }}
                   />
                   {(state.error || problem) && (
-                    <p className="mt-3 text-[14.5px] leading-relaxed text-[#e0c9c2]">
+                    <p className="mt-3 text-[14.5px] leading-relaxed text-[#ebccda]">
                       {state.error ?? problem}
                     </p>
                   )}
@@ -106,7 +106,7 @@ function Sent({ email }: { email: string }) {
         <h1 className="display text-[34px] leading-[1.12] text-bone">Check your email.</h1>
       </Reveal>
       <Reveal delay={380}>
-        <p className="mt-7 max-w-[19rem] text-[17px] leading-[1.7] text-[#cfc3b7]">
+        <p className="mt-7 max-w-[19rem] text-[17px] leading-[1.7] text-[#dcd0d8]">
           We&rsquo;ve sent a link to <span className="text-bone">{email}</span>. Open it on this
           device and you&rsquo;re in.
         </p>

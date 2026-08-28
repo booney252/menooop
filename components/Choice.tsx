@@ -29,7 +29,7 @@ export function Stone({
       <span className="flex-1">
         <span
           className="block text-[17px] leading-tight"
-          style={{ color: selected ? "var(--color-bone)" : "#ded3c7" }}
+          style={{ color: selected ? "var(--color-bone)" : "#e4d9e0" }}
         >
           {label}
         </span>
@@ -78,7 +78,7 @@ export function Chip({
           : disabled
             ? "transparent"
             : "var(--hair)",
-        color: selected ? "var(--color-bone)" : disabled ? "var(--color-dune)" : "#cfc3b7",
+        color: selected ? "var(--color-bone)" : disabled ? "var(--color-dune)" : "#dcd0d8",
       }}
     >
       {label}
@@ -108,7 +108,7 @@ export function Action({
         minHeight: 56,
         background: tone === "solid" ? "var(--color-fig)" : "transparent",
         border: tone === "solid" ? "1px solid var(--color-fig)" : "1px solid var(--hair)",
-        color: tone === "solid" ? "var(--color-bone)" : "#ded3c7",
+        color: tone === "solid" ? "var(--color-bone)" : "#e4d9e0",
       }}
     >
       {children}

@@ -46,7 +46,7 @@ export function ReportCover({ loggedDays }: { loggedDays: number }) {
         </Reveal>
 
         <Reveal delay={320}>
-          <p className="mt-7 max-w-[19rem] text-[17px] leading-[1.7] text-[#cfc3b7]">
+          <p className="mt-7 max-w-[19rem] text-[17px] leading-[1.7] text-[#dcd0d8]">
             {thin
               ? "There isn’t much to put on a page yet. A week or two of check-ins and this becomes worth printing."
               : "Your check-ins, set out so a doctor can read them in twenty seconds. How often, how heavy, what you’ve already tried."}
@@ -72,7 +72,7 @@ export function ReportCover({ loggedDays }: { loggedDays: number }) {
                         span === w
                           ? "color-mix(in srgb, var(--color-figlift) 24%, var(--color-clay))"
                           : "var(--color-clay)",
-                      color: span === w ? "var(--color-bone)" : "#cfc3b7",
+                      color: span === w ? "var(--color-bone)" : "#dcd0d8",
                     }}
                   >
                     {w} days
@@ -105,7 +105,7 @@ export function ReportCover({ loggedDays }: { loggedDays: number }) {
 
         <Reveal delay={720}>
           {error && (
-            <p className="mb-3 text-center text-[14.5px] leading-relaxed text-[#e0c9c2]">{error}</p>
+            <p className="mb-3 text-center text-[14.5px] leading-relaxed text-[#ebccda]">{error}</p>
           )}
           <Action onClick={make} disabled={pending || thin}>
             {pending ? "Putting it together…" : "Prepare the report"}
