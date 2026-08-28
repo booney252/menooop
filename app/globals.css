@@ -302,3 +302,71 @@ body {
   color: #6f5c4e;
   font-weight: 500;
 }
+
+
+/* ── Alternate directions ────────────────────────────────────────────────────
+   Scoped to a wrapper so the preview can render the same screens three ways.
+   Only the six tokens and the two typefaces change; not one component knows
+   which theme it is in. Whichever wins becomes :root and the rest are deleted.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* A · Midnight — a blue-black night sky with a pale brass. The app is for
+   someone awake at 3am; the palette may as well know that. */
+[data-marlow="midnight"] {
+  --color-ink: #14161d;
+  --color-clay: #1c1f28;
+  --color-bone: #eceae4;
+  --color-dune: #8d93a4;
+  --color-fig: #8c6b3f;
+  --color-wash: #262a35;
+  --color-figlift: #c2a163;
+  --font-display: var(--font-bodoni), Didot, Georgia, serif;
+  --font-body: var(--font-public), ui-sans-serif, system-ui, sans-serif;
+  --hair: color-mix(in srgb, var(--color-dune) 24%, transparent);
+}
+
+/* B · Apothecary — dark bottle glass and a paper label. Chemist's shop
+   restraint rather than wellness-brand softness. */
+[data-marlow="apothecary"] {
+  --color-ink: #141c17;
+  --color-clay: #1c261f;
+  --color-bone: #eeece1;
+  --color-dune: #8b978c;
+  --color-fig: #6a4a2c;
+  --color-wash: #222d25;
+  --color-figlift: #a9763f;
+  --font-display: var(--font-garamond), Garamond, Georgia, serif;
+  --font-body: var(--font-karla), ui-sans-serif, system-ui, sans-serif;
+  --hair: color-mix(in srgb, var(--color-dune) 24%, transparent);
+}
+
+/* C · Slate — no serif at all, no warmth in the neutral. One grotesque doing
+   every job, the way a good pharmacy label does. */
+[data-marlow="slate"] {
+  --color-ink: #17181a;
+  --color-clay: #202225;
+  --color-bone: #e9e8e6;
+  --color-dune: #8b8e93;
+  --color-fig: #6d3742;
+  --color-wash: #292b2f;
+  --color-figlift: #9c5563;
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --hair: color-mix(in srgb, var(--color-dune) 24%, transparent);
+}
+
+/* the display face carries the theme's own character, not one set of metrics */
+[data-marlow="slate"] .display {
+  letter-spacing: -0.03em;
+  font-weight: 500;
+}
+[data-marlow="slate"] .display.italic,
+[data-marlow="slate"] .italic {
+  font-style: normal;
+}
+[data-marlow="midnight"] .display {
+  letter-spacing: -0.005em;
+}
+[data-marlow="apothecary"] .display {
+  letter-spacing: 0;
+}

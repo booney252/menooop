@@ -30,12 +30,32 @@ function enabled() {
   return process.env.MARLOW_PREVIEW === "1" && process.env.VERCEL_ENV !== "production";
 }
 
-export default async function Preview({ params }: { params: Promise<{ screen: string }> }) {
+const THEMES = new Set(["midnight", "apothecary", "slate"]);
+
+export default async function Preview({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ screen: string }>;
+  searchParams: Promise<{ theme?: string }>;
+}) {
   if (!enabled()) notFound();
   const { screen } = await params;
+  const { theme } = await searchParams;
   const history = previewHistory();
-  const { profile, days, interventions } = history;
   const insights = previewInsights();
+
+  const view = renderScreen(screen, history, insights);
+  // ?theme=midnight etc. re-skins the same components through the tokens
+  return theme && THEMES.has(theme) ? <div data-marlow={theme}>{view}</div> : view;
+}
+
+function renderScreen(
+  screen: string,
+  history: ReturnType<typeof previewHistory>,
+  insights: ReturnType<typeof previewInsights>
+) {
+  const { profile, days, interventions } = history;
 
   switch (screen) {
     case "today":
