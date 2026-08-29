@@ -3,6 +3,12 @@
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { MonthArc } from "@/components/MonthArc";
+import {
+  ActiveProgramRow,
+  SuggestionCard,
+  type ActiveProgram,
+  type Suggestion,
+} from "@/components/ProgramOnToday";
 import { InsightVisual } from "@/components/InsightVisual";
 import { Reveal } from "@/components/Reveal";
 import { Wordmark } from "@/components/Wordmark";
@@ -16,12 +22,16 @@ export function TodayView({
   today,
   insight,
   appointmentPrompt,
+  activeProgram,
+  suggestion,
 }: {
   profile: Profile;
   days: DayRecord[];
   today: Day;
   insight: Insight | null;
   appointmentPrompt: { id: string; created_at: string } | null;
+  activeProgram: ActiveProgram | null;
+  suggestion: Suggestion | null;
 }) {
   const todayRecord = days.find((d) => d.day === today);
   const done = Boolean(todayRecord);
@@ -78,8 +88,20 @@ export function TodayView({
           {done ? <DoneForToday record={todayRecord!} /> : <NotYet />}
         </Reveal>
 
-        {appointmentPrompt && (
+        {activeProgram && (
+          <Reveal delay={860} className="mt-4">
+            <ActiveProgramRow program={activeProgram} />
+          </Reveal>
+        )}
+
+        {suggestion && (
           <Reveal delay={900} className="mt-8">
+            <SuggestionCard suggestion={suggestion} />
+          </Reveal>
+        )}
+
+        {appointmentPrompt && (
+          <Reveal delay={940} className="mt-8">
             <AppointmentPrompt id={appointmentPrompt.id} />
           </Reveal>
         )}

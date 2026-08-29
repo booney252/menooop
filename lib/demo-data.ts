@@ -165,3 +165,23 @@ export function demoProfile(overrides: Partial<Profile> = {}): Profile {
     ...overrides,
   };
 }
+
+
+/**
+ * Bends one symptom down after a date, so a demo account has a program outcome
+ * worth looking at. Only ever used for the demo account and the design
+ * preview — never for anyone's real record.
+ */
+export function withProgramEffect(
+  days: DayRecord[],
+  startDay: Day,
+  key: SymptomKey,
+  drop: number
+): DayRecord[] {
+  return days.map((d) => {
+    const v = d.severities[key];
+    if (typeof v !== "number" || d.day < startDay) return d;
+    const eased = Math.max(0, Math.min(3, Math.round(v - drop))) as Severity;
+    return { ...d, severities: { ...d.severities, [key]: eased } };
+  });
+}

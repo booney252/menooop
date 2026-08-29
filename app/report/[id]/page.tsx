@@ -1,6 +1,8 @@
 import { notFound, redirect } from "next/navigation";
 import { getDays, getInterventions, getProfile } from "@/lib/data/history";
 import { getReport } from "@/lib/data/reports";
+import { getEnrollments, getOutcomes } from "@/lib/data/programs";
+import { PROGRAM_BY_ID, type ProgramId } from "@/content/programs";
 import { daysBetween } from "@/lib/day";
 import { describeSymptom } from "@/lib/insights/describe";
 import { neutralQuestions } from "@/lib/insights/questions";
@@ -17,10 +19,23 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   if (!report) notFound();
 
   const span = daysBetween(report.window_start, report.window_end) + 1;
-  const [days, interventions] = await Promise.all([
+  const [days, interventions, enrollments, outcomes] = await Promise.all([
     getDays(profile, Math.max(span, 30)),
     getInterventions(),
+    getEnrollments(),
+    getOutcomes(),
   ]);
+
+  // programs she has run, with what her own check-ins said happened
+  const programs = enrollments
+    .filter((e) => e.status === "completed" || e.status === "active")
+    .map((e) => ({
+      name: PROGRAM_BY_ID[e.program_id as ProgramId]?.name ?? e.program_id,
+      weeks: PROGRAM_BY_ID[e.program_id as ProgramId]?.weeks ?? 0,
+      startedOn: e.started_on,
+      status: e.status,
+      sentences: outcomes.filter((o) => o.enrollment_id === e.id).map((o) => o.sentence),
+    }));
 
   const rows = profile.symptoms.map((key) => ({
     key,
@@ -40,6 +55,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
       interventions={interventions}
       questions={neutralQuestions(days, profile, interventions, span, report.window_end)}
       notes={notes}
+      programs={programs}
       stage={profile.stage}
     />
   );

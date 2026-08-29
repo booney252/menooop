@@ -49,3 +49,15 @@ export function ReportIcon() {
     </svg>
   );
 }
+
+/** a run of sessions, ticked off left to right */
+export function ProgramsIcon() {
+  return (
+    <svg {...base}>
+      <circle cx="5" cy="10" r="2.1" />
+      <circle cx="10" cy="10" r="2.1" />
+      <circle cx="15" cy="10" r="2.1" />
+      <path d="M7.1 10h.8M12.1 10h.8" />
+    </svg>
+  );
+}

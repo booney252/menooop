@@ -15,6 +15,7 @@ import {
   PROGRAM_BY_ID,
   VOICE_DISCLOSURE,
   totalDays,
+  type ProgramId,
 } from "@/content/programs";
 import { matchProgram, shouldOffer } from "@/lib/programs/match";
 import { computeOutcome, outcomeReady, weeklyNote } from "@/lib/programs/outcome";
@@ -29,8 +30,8 @@ const TODAY = "2026-08-27";
 // ── helpers ─────────────────────────────────────────────────────────────────
 
 /** every string a user could actually read */
-function copyOf(programId: string): string[] {
-  const p = PROGRAM_BY_ID[programId as never];
+function copyOf(programId: ProgramId): string[] {
+  const p = PROGRAM_BY_ID[programId];
   return [
     p.name,
     p.tagline,

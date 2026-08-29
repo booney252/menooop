@@ -13,7 +13,21 @@ const weekKey = (d: Date) => {
   return monday.toISOString().slice(0, 10);
 };
 
-type Row = { user_id: string; name: string; created_at: string };
+type Row = {
+  user_id: string;
+  name: string;
+  created_at: string;
+  props: Record<string, string | number | boolean> | null;
+};
+type EnrollmentRow = { id: string; program_id: string; status: string; started_on: string };
+type OutcomeRow = { enrollment_id: string; delta: number | null; verdict: string };
+
+const median = (xs: number[]) => {
+  if (!xs.length) return null;
+  const s = [...xs].sort((a, b) => a - b);
+  const mid = Math.floor(s.length / 2);
+  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+};
 
 export default async function Admin() {
   const user = await currentUser();
@@ -23,13 +37,16 @@ export default async function Admin() {
   const admin = supabaseAdmin();
   const now = Date.now();
 
-  const [{ data: profiles }, { data: events }] = await Promise.all([
-    admin.from("profiles").select("id, created_at, onboarded_at"),
-    admin.from("events").select("user_id, name, created_at").gte(
-      "created_at",
-      iso(new Date(now - 120 * DAY))
-    ),
-  ]);
+  const [{ data: profiles }, { data: events }, { data: enrollmentRows }, { data: outcomeRows }] =
+    await Promise.all([
+      admin.from("profiles").select("id, created_at, onboarded_at"),
+      admin.from("events").select("user_id, name, created_at, props").gte(
+        "created_at",
+        iso(new Date(now - 120 * DAY))
+      ),
+      admin.from("enrollments").select("id, program_id, status, started_on"),
+      admin.from("outcomes").select("enrollment_id, delta, verdict"),
+    ]);
 
   const people = (profiles ?? []) as { id: string; created_at: string; onboarded_at: string | null }[];
   const log = (events ?? []) as Row[];
@@ -87,6 +104,52 @@ export default async function Admin() {
   const rows = [...cohorts.entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1)).slice(0, 10);
   const pct = (n: number, d: number) => (d ? `${Math.round((n / d) * 100)}%` : "—");
 
+  // ── the Relief Loop ───────────────────────────────────────────────────────
+  // Completion rate is the number that decides whether this feature has a
+  // future, so it is measured per track and at two depths.
+  const enrolls = (enrollmentRows ?? []) as EnrollmentRow[];
+  const outs = (outcomeRows ?? []) as OutcomeRow[];
+  const recommended = log.filter((e) => e.name === "program_recommended");
+  const sessionEvents = log.filter((e) => e.name === "session_completed");
+
+  const offeredUsers = new Set(recommended.map((e) => e.user_id));
+  const enrolledAfterOffer = new Set(
+    log.filter((e) => e.name === "program_enrolled" && offeredUsers.has(e.user_id)).map((e) => e.user_id)
+  );
+
+  const sessionsByEnrollment = new Map<string, Set<number>>();
+  for (const e of sessionEvents) {
+    const day = Number(e.props?.day ?? 0);
+    const key = String(e.props?.program ?? "") + ":" + e.user_id;
+    const set = sessionsByEnrollment.get(key) ?? new Set<number>();
+    set.add(day);
+    sessionsByEnrollment.set(key, set);
+  }
+
+  const tracks = ["cool", "rest", "steady"].map((id) => {
+    const mine = enrolls.filter((e) => e.program_id === id);
+    const mature = mine.filter((e) => (now - Date.parse(e.started_on)) / DAY >= 14);
+    const reachedWeek2 = mature.filter((e) => {
+      const key = `${id}:`;
+      for (const [k, set] of sessionsByEnrollment) {
+        if (!k.startsWith(key)) continue;
+        if ([...set].some((d) => d >= 8)) return true;
+      }
+      return false;
+    });
+    const completed = mine.filter((e) => e.status === "completed");
+    const deltas = outs
+      .filter((o) => mine.some((e) => e.id === o.enrollment_id) && o.delta !== null)
+      .map((o) => Number(o.delta));
+    return {
+      id,
+      enrolled: mine.length,
+      week2: pct(reachedWeek2.length, mature.length),
+      completed: pct(completed.length, mature.length),
+      medianDelta: median(deltas),
+    };
+  });
+
   return (
     <div className="min-h-dvh bg-ink px-7 py-16">
       <div className="mx-auto max-w-[42rem]">
@@ -105,7 +168,45 @@ export default async function Admin() {
             note="check-ins ÷ active users × 7"
           />
           <Stat label="Active this week" value={String(activeWeek.size)} />
+          <Stat
+            label="Enrolled after a nudge"
+            value={pct(enrolledAfterOffer.size, offeredUsers.size)}
+            note="of users shown a program card"
+          />
         </dl>
+
+        <h2 className="label mt-14 mb-4">The Relief Loop, by track</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-[14.5px]">
+            <thead>
+              <tr className="border-b hair text-[12px] tracking-[0.1em] text-dune uppercase">
+                <th className="py-2 pr-4 font-medium">Track</th>
+                <th className="py-2 pr-4 font-medium">Enrolled</th>
+                <th className="py-2 pr-4 font-medium">Reached week 2</th>
+                <th className="py-2 pr-4 font-medium">Completed</th>
+                <th className="py-2 font-medium">Median delta</th>
+              </tr>
+            </thead>
+            <tbody>
+              {tracks.map((t) => (
+                <tr key={t.id} className="border-b hair text-[#e4d9e0]">
+                  <td className="py-2.5 pr-4">{t.id}</td>
+                  <td className="py-2.5 pr-4">{t.enrolled}</td>
+                  <td className="py-2.5 pr-4">{t.week2}</td>
+                  <td className="py-2.5 pr-4">{t.completed}</td>
+                  <td className="py-2.5">
+                    {t.medianDelta === null ? "—" : t.medianDelta.toFixed(2)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-4 text-[13px] leading-relaxed text-dune">
+          Percentages count only enrollments old enough to have reached that point. Median delta
+          is the change in severity on the track&rsquo;s target symptom — negative is better,
+          except for feeling like yourself.
+        </p>
 
         <h2 className="label mt-14 mb-4">Retention by signup week</h2>
         <div className="overflow-x-auto">

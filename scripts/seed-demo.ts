@@ -11,8 +11,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
-import { demoDays, demoInterventions, DEMO_SYMPTOMS } from "../lib/demo-data";
+import { demoDays, demoInterventions, withProgramEffect, DEMO_SYMPTOMS } from "../lib/demo-data";
 import { candidates } from "../lib/insights/engine";
+import { computeOutcome } from "../lib/programs/outcome";
 import { shiftDay, todayIn } from "../lib/day";
 import type { History } from "../lib/types";
 
@@ -29,7 +30,17 @@ for (const file of [".env.local", ".env"]) {
 
 const email = process.argv[2];
 if (!email) {
-  console.error("Usage: npm run seed:demo -- demo@example.com");
+  console.error("Usage: npm run seed:demo -- demo@example.com [--program=done|mid|none]");
+  process.exit(1);
+}
+
+/** which program state to leave the account in; "done" is the filmable one */
+const programState = (
+  process.argv.find((a) => a.startsWith("--program="))?.split("=")[1] ?? "done"
+) as "done" | "mid" | "none";
+
+if (!["done", "mid", "none"].includes(programState)) {
+  console.error(`Unknown --program=${programState}. Use done, mid or none.`);
   process.exit(1);
 }
 
@@ -77,7 +88,7 @@ async function main() {
     .upsert({
       id: userId,
       first_name: "Ada",
-      stage: "irregular",
+      stage: "irregular" as const,
       symptoms: DEMO_SYMPTOMS,
       timezone: TIMEZONE,
       onboarded_at: new Date(Date.parse(`${shiftDay(today, -61)}T09:00:00Z`)).toISOString(),
@@ -101,7 +112,16 @@ async function main() {
     )
     .select("id, name, started_on, ended_on");
 
-  const days = demoDays(today);
+  // the program that shaped the second half of her record
+  const PROGRAM = "cool";
+  const PROGRAM_SYMPTOM = "hot_flashes" as const;
+  const startedOn =
+    programState === "done" ? shiftDay(today, -44) : shiftDay(today, -18);
+
+  let days = demoDays(today);
+  if (programState !== "none") {
+    days = withProgramEffect(days, startedOn, PROGRAM_SYMPTOM, programState === "done" ? 1.4 : 0.8);
+  }
 
   for (const day of days) {
     const { data: checkin } = await admin
@@ -129,11 +149,11 @@ async function main() {
   }
 
   // run the engine the way the app would have, one insight at a time
-  const history: History = {
+  const historyBase: History = {
     profile: {
       id: userId,
       first_name: "Ada",
-      stage: "irregular",
+      stage: "irregular" as const,
       symptoms: DEMO_SYMPTOMS,
       timezone: TIMEZONE,
       nudge_enabled: false,
@@ -145,6 +165,7 @@ async function main() {
     days,
     interventions: (savedInterventions ?? interventions) as History["interventions"],
   };
+  const history = historyBase;
 
   const seen = new Set<string>();
   let lastKind: string | null = null;
@@ -169,6 +190,76 @@ async function main() {
     offset += 3;
   }
 
+  // ── the program, so the Outcome screen has something real to draw ────────
+  if (programState !== "none") {
+    const { data: programIntervention } = await admin
+      .from("interventions")
+      .insert({ user_id: userId, name: "Cool program", started_on: startedOn })
+      .select("id")
+      .single();
+
+    const completed = programState === "done";
+    const { data: enrollment } = await admin
+      .from("enrollments")
+      .insert({
+        user_id: userId,
+        program_id: PROGRAM,
+        started_on: startedOn,
+        status: completed ? "completed" : "active",
+        completed_at: completed ? new Date(`${today}T09:00:00Z`).toISOString() : null,
+        intervention_id: programIntervention?.id ?? null,
+      })
+      .select("id")
+      .single();
+
+    if (enrollment) {
+      // she missed a few, because everybody does
+      const sessions = completed ? 38 : 16;
+      const skipped = new Set([5, 12, 23, 31]);
+      const rows = [];
+      for (let day = 1, offset = 0; rows.length < sessions && day <= 42; day++, offset++) {
+        if (skipped.has(day)) continue;
+        rows.push({
+          user_id: userId,
+          enrollment_id: enrollment.id,
+          day_index: day,
+          completed_on: shiftDay(startedOn, offset),
+          rating: day % 5 === 0 ? "neutral" : "helped",
+        });
+      }
+      await admin.from("session_completions").insert(rows);
+
+      if (completed) {
+        const history = { ...historyBase, days };
+        const results = computeOutcome(days, {
+          id: enrollment.id,
+          program_id: PROGRAM,
+          started_on: startedOn,
+          status: "completed",
+          paused_at: null,
+          completed_at: new Date(`${today}T09:00:00Z`).toISOString(),
+          intervention_id: null,
+          created_at: new Date().toISOString(),
+        }, history.profile.symptoms, today);
+
+        await admin.from("outcomes").insert(
+          results.map((r) => ({
+            user_id: userId,
+            enrollment_id: enrollment.id,
+            symptom_key: r.symptom,
+            baseline: r.baseline,
+            endpoint: r.endpoint,
+            delta: r.delta,
+            baseline_days: r.baselineDays,
+            endpoint_days: r.endpointDays,
+            verdict: r.verdict,
+            sentence: r.sentence,
+          }))
+        );
+      }
+    }
+  }
+
   const checkinEvents = days.map((d) => ({
     user_id: userId,
     name: "checkin_completed",
@@ -177,7 +268,9 @@ async function main() {
   }));
   await admin.from("events").insert(checkinEvents);
 
-  console.log(`Seeded ${email}: ${days.length} check-ins, ${seen.size} insights.`);
+  console.log(
+    `Seeded ${email}: ${days.length} check-ins, ${seen.size} insights, program ${programState}.`
+  );
   console.log("Sign in with a magic link to that address to see it.");
 }
 

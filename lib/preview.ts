@@ -7,7 +7,10 @@ import { candidates } from "./insights/engine";
 import { describeSymptom } from "./insights/describe";
 import { neutralQuestions } from "./insights/questions";
 import { shiftDay } from "./day";
-import type { History, Insight, Report } from "./types";
+import type { Enrollment, History, Insight, Report } from "./types";
+import { computeOutcome, weeklyNote } from "./programs/outcome";
+import { matchProgram } from "./programs/match";
+import { demoDays as makeDays } from "./demo-data";
 
 export const PREVIEW_TODAY = "2026-08-27";
 
@@ -72,4 +75,60 @@ export function previewReportRows() {
 export function previewQuestions() {
   const { profile, days, interventions } = previewHistory();
   return neutralQuestions(days, profile, interventions, 60, PREVIEW_TODAY);
+}
+
+
+// ── the Relief Loop ─────────────────────────────────────────────────────────
+
+export function previewEnrollment(over: Partial<Enrollment> = {}): Enrollment {
+  return {
+    id: "preview-enrollment",
+    program_id: "cool",
+    started_on: shiftDay(PREVIEW_TODAY, -42),
+    status: "active",
+    paused_at: null,
+    completed_at: null,
+    intervention_id: null,
+    created_at: new Date().toISOString(),
+    ...over,
+  };
+}
+
+export const previewSuggestion = () => {
+  const { profile, days } = previewHistory();
+  return matchProgram(days, profile.symptoms);
+};
+
+export const previewWeeklyNote = () => {
+  const { profile, days } = previewHistory();
+  return weeklyNote(days, previewEnrollment(), profile.symptoms, PREVIEW_TODAY);
+};
+
+/**
+ * A history where the flashes genuinely came down after the program started,
+ * so the Outcome screen has a real curve to draw rather than noise.
+ */
+export function previewOutcomeHistory(improved: boolean) {
+  const { profile } = previewHistory();
+  const base = makeDays(PREVIEW_TODAY, ["hot_flashes", "sleep"], 70);
+  const start = shiftDay(PREVIEW_TODAY, -42);
+  // real records are noisy; a perfectly flat before-and-after looks invented,
+  // and this is the screen the founder will be filming
+  const wobble = (day: string, spread: number) =>
+    ((day.charCodeAt(8) * 7 + day.charCodeAt(9) * 13) % 100) / 100 < spread ? 1 : 0;
+
+  const days = base.map((d) => {
+    const after = d.day >= start;
+    const centre = after ? (improved ? 1 : 2) : 2.4;
+    const up = wobble(d.day, after ? 0.3 : 0.55);
+    const down = wobble(d.day.split("").reverse().join(""), 0.25) ? 1 : 0;
+    const value = Math.max(0, Math.min(3, Math.round(centre + up - down)));
+    return { ...d, severities: { ...d.severities, hot_flashes: value as 0 | 1 | 2 | 3 } };
+  });
+  return { profile, days };
+}
+
+export function previewOutcome(improved: boolean) {
+  const { profile, days } = previewOutcomeHistory(improved);
+  return computeOutcome(days, previewEnrollment({ status: "completed", completed_at: `${PREVIEW_TODAY}T09:00:00Z` }), profile.symptoms, PREVIEW_TODAY);
 }

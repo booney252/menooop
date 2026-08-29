@@ -8,7 +8,7 @@ export function AppShell({
   footer,
 }: {
   children: React.ReactNode;
-  tab?: "today" | "ask" | "patterns" | "report";
+  tab?: "today" | "programs" | "ask" | "patterns" | "report";
   /** pinned above the tab bar — used by Ask for its composer */
   footer?: React.ReactNode;
 }) {

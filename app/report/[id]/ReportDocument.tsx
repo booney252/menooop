@@ -15,6 +15,7 @@ export function ReportDocument({
   interventions,
   questions,
   notes,
+  programs,
   stage,
 }: {
   report: Report;
@@ -22,6 +23,13 @@ export function ReportDocument({
   interventions: Intervention[];
   questions: string[];
   notes: { day: string; note: string }[];
+  programs: {
+    name: string;
+    weeks: number;
+    startedOn: string;
+    status: string;
+    sentences: string[];
+  }[];
   stage: Stage | null;
 }) {
   const active = interventions.filter((i) => !i.ended_on);
@@ -120,6 +128,32 @@ export function ReportDocument({
                 ))}
               </ul>
             </Reveal>
+
+            {programs.length > 0 && (
+              <Reveal delay={840}>
+                <p className="paper-label mt-12">Programs I&rsquo;ve done</p>
+                <ul className="doc-tried-list mt-3.5 flex flex-col gap-3.5">
+                  {programs.map((p) => (
+                    <li key={`${p.name}-${p.startedOn}`} className="border-b paper-rule pb-3">
+                      <div className="flex items-baseline justify-between gap-4">
+                        <span className="shrink-0 text-[16px] text-[#2b1a26]">
+                          {p.name}, {p.weeks} weeks
+                        </span>
+                        <span className="text-right text-[13.5px] paper-dim">
+                          {p.status === "completed" ? "Completed" : "In progress"} · from{" "}
+                          {longDay(p.startedOn)}
+                        </span>
+                      </div>
+                      {p.sentences.map((line) => (
+                        <p key={line} className="doc-rownote mt-2 text-[13.5px] leading-relaxed paper-dim">
+                          {line}
+                        </p>
+                      ))}
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+            )}
 
             {notes.length > 0 && (
               <Reveal delay={880}>

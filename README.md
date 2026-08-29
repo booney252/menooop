@@ -79,6 +79,47 @@ matters is not a crash, it is saying something her data does not support.
 It also avoids serving the same *kind* two days running when it has an
 alternative, so she does not get four intervention comparisons in a row.
 
+## The Relief Loop
+
+Programs she runs on herself: match, deliver, prove.
+
+One generic system — `programs`, `program_sessions`, `enrollments`,
+`session_completions`, `outcomes` — with the three launch tracks as content on
+top. A supplement, when there is one, becomes another intervention on the same
+rails.
+
+**Match.** `lib/programs/match.ts` reads her own record. It needs a fortnight
+of check-ins, then picks the track whose target symptom is noticeable-or-worse
+on the biggest share of her days; a tie at the top goes to Steady, because a
+tie is what Steady is for. The card on Today is dismissible and stays away for
+four weeks. Matching is a recommendation, never a gate — she can browse and
+self-enroll in any of them, one at a time.
+
+**Deliver.** `/programs/[id]/session/[day]`. Audio sessions get a filling arc,
+text sessions get paced cards, and both end with one tap: helped, neutral, not
+for me. Missing days do nothing at all. Audio resolves at
+`/audio/{program}/{ref}.mp3`, and a session whose file is not in yet says so
+and still lets her mark it done.
+
+**Prove.** Enrolling writes an intervention row, so the before/after machinery
+that already exists treats a program exactly like magnesium. `computeOutcome`
+compares the fortnight before enrollment with the fortnight at the end, and a
+null result is a first-class verdict with its own sentence. Outcomes are
+persisted and flow into the doctor report automatically.
+
+### Where the copy lives
+
+`content/programs/*.ts`. Structure is in the database, the words are here, and
+`npm run gen:sessions` regenerates the seed so the two cannot drift. Anything
+not yet through claims review is marked `FOR_REPLACEMENT` and the tests check
+that it still is.
+
+`tests/programs.test.ts` runs a regex over every string a user could read,
+looking for treat, cure, therapy, clinically proven and the rest. It also
+checks each track states the limits of its evidence, and that the outcome
+engine cannot be talked into calling a null result a success. Break a rule and
+it fails — that was checked by breaking one on purpose.
+
 ## Ask Marlow
 
 `app/api/chat/route.ts`. `claude-opus-5`, streaming, adaptive thinking at low

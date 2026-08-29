@@ -98,6 +98,21 @@ the voice cannot quietly drift as rules get added.
 **The appointment prompt is small enough to ignore.** One line and a link,
 below the primary action, asked once per report and dismissible for good.
 
+## The session player
+
+The nightly habit, so it gets the most care: full screen, no tab bar, one thing
+on it. Audio sessions are a single filling arc — the same mark the month arc is
+drawn from, at the largest size it appears anywhere in the app. Text sessions
+are one card at a time with a thin run of segments beneath, so the length is
+visible without being a progress bar to grind through.
+
+The outcome screen is the only place the app makes a claim about itself, so it
+is the one place the numbers are set in the display face at full size. The
+curve underneath is daily marks plus a mean line either side of a hairline
+where the program began. Days she did not log are simply absent — the line is
+never interpolated across a gap she did not fill, because the whole value of
+the screen is that it is hers and it is true.
+
 ## Rules held throughout
 
 - No photography of any kind, and no emoji as UI. Texture comes from a faint
