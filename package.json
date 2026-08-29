@@ -7,11 +7,12 @@
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "next lint",
-    "test": "tsx tests/engine.test.ts",
+    "test": "tsx tests/engine.test.ts && tsx tests/programs.test.ts",
     "db:verify": "bash scripts/db-verify.sh",
     "seed:demo": "tsx scripts/seed-demo.ts",
     "shots": "node scripts/screenshots.mjs ./screenshots",
-    "preview": "node scripts/preview.mjs"
+    "preview": "node scripts/preview.mjs",
+    "gen:sessions": "tsx scripts/gen-sessions-sql.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.121.0",

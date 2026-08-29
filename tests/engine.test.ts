@@ -8,6 +8,7 @@
  */
 
 import assert from "node:assert/strict";
+import { harness } from "./harness";
 import { candidates, nextInsight } from "@/lib/insights/engine";
 import { TUNING } from "@/lib/insights/constants";
 import {
@@ -21,17 +22,7 @@ import type { DayRecord, History, Severity } from "@/lib/types";
 import type { SymptomKey } from "@/lib/symptoms";
 
 const END = "2026-08-27";
-let passed = 0;
-const failures: string[] = [];
-
-function test(name: string, fn: () => void) {
-  try {
-    fn();
-    passed++;
-  } catch (error) {
-    failures.push(`${name}\n    ${(error as Error).message.split("\n")[0]}`);
-  }
-}
+const { test, done } = harness();
 
 const fullHistory = (): History => ({
   profile: demoProfile(),
@@ -251,8 +242,4 @@ test("a quiet stretch is celebrated once, not every day it continues", () => {
   }
 });
 
-// ── report ──────────────────────────────────────────────────────────────────
-
-console.log(`\n  ${passed} passed, ${failures.length} failed\n`);
-for (const f of failures) console.error(`  ✗ ${f}\n`);
-process.exit(failures.length ? 1 : 0);
+done("insight engine");

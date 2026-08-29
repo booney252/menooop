@@ -77,3 +77,52 @@ export type History = {
   days: DayRecord[];
   interventions: Intervention[];
 };
+
+
+// ── The Relief Loop ─────────────────────────────────────────────────────────
+
+export type EnrollmentStatus = "active" | "paused" | "completed" | "stopped";
+
+export type Enrollment = {
+  id: string;
+  program_id: string;
+  started_on: Day;
+  status: EnrollmentStatus;
+  paused_at: string | null;
+  completed_at: string | null;
+  intervention_id: string | null;
+  created_at: string;
+};
+
+export type SessionRating = "helped" | "neutral" | "not_for_me";
+
+export type SessionCompletion = {
+  id: string;
+  enrollment_id: string;
+  day_index: number;
+  completed_on: Day;
+  rating: SessionRating | null;
+};
+
+export type OutcomeVerdict = "improved" | "no_change" | "worse" | "not_enough_data";
+
+export type Outcome = {
+  id: string;
+  enrollment_id: string;
+  symptom_key: SymptomKey;
+  baseline: number | null;
+  endpoint: number | null;
+  delta: number | null;
+  baseline_days: number;
+  endpoint_days: number;
+  verdict: OutcomeVerdict;
+  sentence: string;
+  created_at: string;
+};
+
+export type ProgramRecommendation = {
+  id: string;
+  program_id: string;
+  shown_on: Day;
+  dismissed_at: string | null;
+};

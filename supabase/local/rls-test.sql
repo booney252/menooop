@@ -38,6 +38,16 @@ begin;
     values (auth.uid(), current_date - 59, current_date, 42);
 
   insert into public.events (user_id, name) values (auth.uid(), 'checkin_completed');
+
+  -- and she starts a program
+  insert into public.enrollments (id, user_id, program_id, started_on)
+    values ('eeeeeeee-0000-0000-0000-000000000001', auth.uid(), 'rest', current_date - 20);
+  insert into public.session_completions (user_id, enrollment_id, day_index, completed_on, rating)
+    values (auth.uid(), 'eeeeeeee-0000-0000-0000-000000000001', 1, current_date - 20, 'helped');
+  insert into public.outcomes (user_id, enrollment_id, symptom_key, verdict, sentence)
+    values (auth.uid(), 'eeeeeeee-0000-0000-0000-000000000001', 'sleep', 'improved', 'Your sleep ratings came down.');
+  insert into public.program_recommendations (user_id, program_id, shown_on)
+    values (auth.uid(), 'rest', current_date - 30);
 commit;
 
 -- ── Ada can see her own rows ───────────────────────────────────────────────
@@ -68,6 +78,10 @@ begin;
     if (select count(*) from public.insights)         > 0 then leaked := 'insights';         end if;
     if (select count(*) from public.chat_messages)    > 0 then leaked := 'chat_messages';    end if;
     if (select count(*) from public.reports)          > 0 then leaked := 'reports';          end if;
+    if (select count(*) from public.enrollments)      > 0 then leaked := 'enrollments';      end if;
+    if (select count(*) from public.session_completions) > 0 then leaked := 'session_completions'; end if;
+    if (select count(*) from public.outcomes)         > 0 then leaked := 'outcomes';         end if;
+    if (select count(*) from public.program_recommendations) > 0 then leaked := 'program_recommendations'; end if;
     if leaked is not null then
       raise exception 'LEAK: Bea can read another user''s %', leaked;
     end if;
@@ -92,6 +106,13 @@ begin;
       insert into public.chat_messages (user_id, role, content)
         values ('11111111-1111-1111-1111-111111111111', 'user', 'hello');
       raise exception 'LEAK: Bea inserted a chat message owned by Ada';
+    exception when insufficient_privilege then null;
+    end;
+
+    begin
+      insert into public.enrollments (user_id, program_id, started_on)
+        values ('11111111-1111-1111-1111-111111111111', 'cool', current_date);
+      raise exception 'LEAK: Bea enrolled Ada in a program';
     exception when insufficient_privilege then null;
     end;
   end
@@ -148,12 +169,51 @@ begin;
   $$;
 commit;
 
+-- ── a session row can never disagree with its enrollment's owner ───────────
+begin;
+  set local role authenticated;
+  set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111"}';
+  do $$
+  begin
+    begin
+      insert into public.session_completions (user_id, enrollment_id, day_index, completed_on)
+        values ('22222222-2222-2222-2222-222222222222',
+                'eeeeeeee-0000-0000-0000-000000000001', 2, current_date);
+      raise exception 'session row accepted a mismatched owner';
+    exception
+      when foreign_key_violation then null;
+      when insufficient_privilege then null;
+    end;
+  end
+  $$;
+commit;
+
+-- ── only one program can be active at a time ───────────────────────────────
+begin;
+  set local role authenticated;
+  set local request.jwt.claims = '{"sub":"11111111-1111-1111-1111-111111111111"}';
+  do $$
+  begin
+    begin
+      insert into public.enrollments (user_id, program_id, started_on)
+        values (auth.uid(), 'cool', current_date);
+      raise exception 'a second active program was allowed';
+    exception when unique_violation then null;
+    end;
+  end
+  $$;
+commit;
+
 -- ── deleting the account truly deletes the data ────────────────────────────
 delete from auth.users where id = '11111111-1111-1111-1111-111111111111';
 do $$
 declare n integer;
 begin
   select (select count(*) from public.profiles)
+       + (select count(*) from public.enrollments)
+       + (select count(*) from public.session_completions)
+       + (select count(*) from public.outcomes)
+       + (select count(*) from public.program_recommendations)
        + (select count(*) from public.checkins)
        + (select count(*) from public.checkin_symptoms)
        + (select count(*) from public.interventions)

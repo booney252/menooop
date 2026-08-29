@@ -54,4 +54,29 @@ export const TUNING = {
     /** below this many logged days, say plainly that it is too early */
     enoughDays: 21,
   },
+
+  /** The Relief Loop: matching a program, and proving whether it did anything */
+  program: {
+    /** logged days needed before Marlow will suggest a program at all */
+    minDaysToRecommend: 14,
+    /** the share of logged days a symptom must be noticeable-or-worse on */
+    minShareModeratePlus: 0.4,
+    /** two tracks this close together counts as a tie, and Steady wins it */
+    tieWithin: 0.08,
+    /** a dismissed suggestion stays away this long before it may return */
+    quietDaysAfterDismiss: 28,
+
+    /** days either side of the start date used for the before/after */
+    windowDays: 14,
+    /** logged days needed in each window before an outcome may be called */
+    minDaysEachSide: 7,
+    /** the average must move at least this far to call it a change */
+    minShift: 0.5,
+    /** the outcome becomes available at completion, or after this many days */
+    outcomeAfterDays: 42,
+
+    /** silent this long and she gets one soft nudge; then it pauses itself */
+    nudgeAfterSilentDays: 10,
+    pauseAfterSilentDays: 21,
+  },
 } as const;

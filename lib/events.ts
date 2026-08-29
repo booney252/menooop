@@ -13,7 +13,15 @@ export type EventName =
   | "report_generated"
   | "report_outcome_logged"
   | "chat_message_sent"
-  | "day_n_return";
+  | "day_n_return"
+  | "program_recommended"
+  | "program_viewed"
+  | "program_enrolled"
+  | "session_completed"
+  | "program_paused"
+  | "program_resumed"
+  | "program_completed"
+  | "outcome_viewed";
 
 export async function logEvent(
   name: EventName,
