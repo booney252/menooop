@@ -80,6 +80,12 @@ body {
   border-color: var(--hair);
 }
 
+/* Centred text carries its trailing letter-space into the centring, which
+   shifts the glyphs left. An indent of the same size cancels it out. */
+.label.text-center {
+  text-indent: 0.22em;
+}
+
 /* ── focus ────────────────────────────────────────────────── */
 :focus-visible {
   outline: 2px solid var(--color-bone);

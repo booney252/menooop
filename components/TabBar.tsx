@@ -1,13 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { AskIcon, PatternsIcon, ReportIcon, TodayIcon } from "./TabIcons";
 
 const TABS = [
-  { id: "today", label: "Today", href: "/today" },
-  { id: "ask", label: "Ask", href: "/ask" },
-  { id: "patterns", label: "Patterns", href: "/patterns" },
-  { id: "report", label: "Report", href: "/report" },
+  { id: "today", label: "Today", href: "/today", Icon: TodayIcon },
+  { id: "ask", label: "Ask", href: "/ask", Icon: AskIcon },
+  { id: "patterns", label: "Patterns", href: "/patterns", Icon: PatternsIcon },
+  { id: "report", label: "Report", href: "/report", Icon: ReportIcon },
 ] as const;
+
+/** the tracking on the labels, kept here because the centering depends on it */
+const TRACKING = "0.14em";
 
 export function TabBar({
   active,
@@ -30,33 +34,30 @@ export function TabBar({
         aria-label="Sections"
       >
         <ul className="mx-auto flex max-w-[350px] items-stretch justify-between px-1 pt-1 pb-[max(14px,env(safe-area-inset-bottom))]">
-          {TABS.map((t) => {
-            const on = t.id === active;
+          {TABS.map(({ id, label, href, Icon }) => {
+            const on = id === active;
             return (
-              <li key={t.id} className="flex-1">
+              <li key={id} className="flex-1">
                 <Link
-                  href={t.href}
+                  href={href}
                   aria-current={on ? "page" : undefined}
-                  className="flex h-[52px] flex-col items-center justify-center gap-[7px] rounded-2xl"
+                  className="flex h-[52px] flex-col items-center justify-center gap-[5px] rounded-2xl transition-colors duration-500"
+                  style={{ color: on ? "var(--color-bone)" : "var(--color-dune)" }}
                 >
+                  <Icon />
                   <span
-                    className="text-[11.5px] uppercase transition-colors duration-500"
+                    className="text-[10px] uppercase"
                     style={{
-                      color: on ? "var(--color-bone)" : "var(--color-dune)",
-                      letterSpacing: "0.16em",
+                      letterSpacing: TRACKING,
                       fontWeight: on ? 600 : 500,
+                      // letter-spacing adds a trailing space after the last
+                      // letter, which pushes centred text visibly off to the
+                      // left. Pull it back by the same amount.
+                      marginRight: `-${TRACKING}`,
                     }}
                   >
-                    {t.label}
+                    {label}
                   </span>
-                  <span
-                    aria-hidden
-                    className="h-[5px] w-[5px] rounded-full transition-all duration-500"
-                    style={{
-                      background: on ? "var(--color-figlift)" : "transparent",
-                      transform: on ? "scale(1)" : "scale(0.4)",
-                    }}
-                  />
                 </Link>
               </li>
             );

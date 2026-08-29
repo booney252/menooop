@@ -106,8 +106,14 @@ below the primary action, asked once per report and dismissible for good.
 - No streaks, badges or guilt. Miss a week and the app says nothing.
 - No stat tiles, gradient hero cards or dashboard grids. Patterns speaks in
   sentences.
-- Text-only tab bar with a single fig dot for the active section — icon tab
-  bars are the template tell.
+- The tab bar carries a hairline glyph over a letterspaced-caps label. Icons
+  were left out at first on the grounds that icon tab bars are the template
+  tell; they earn their place here by being drawn in the app's own language
+  rather than pulled from an icon set — Patterns is a run of pigment marks on
+  a baseline, the same mark the strips and the arc are made of.
+- Anything centred with letterspacing needs the trailing space cancelled, or
+  the glyphs sit visibly left of centre. Flex children take a negative
+  `margin-right`; centred text takes a `text-indent` of the same size.
 - Marlow never opens an answer with a paragraph of empathy before the point,
   never uses bullet lists unless asked for options, and never says journey,
   warrior, thrive, or "the change".
