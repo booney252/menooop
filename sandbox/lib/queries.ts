@@ -13,8 +13,9 @@ function toInspo(r: Row): Inspo {
 function toIdea(r: Row): Idea {
   return { ...(r as Omit<Idea, "beats">), beats: parseBeats(r.beats) };
 }
+// node:sqlite rows have a null prototype; copy into plain objects so they can cross to client components.
 function toVideo(r: Row): Video {
-  return r as unknown as Video;
+  return { ...r } as unknown as Video;
 }
 
 export function listInspo(): Inspo[] {

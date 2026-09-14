@@ -44,5 +44,5 @@ reordered, deleted or added on any inspo or idea.
 
 ## Stack
 
-Next.js (App Router) + Tailwind, `better-sqlite3`, `marked` for the script
-preview. Server actions do the writes; every page is rendered on demand.
+Next.js (App Router) + Tailwind, Node's built-in `node:sqlite` (so nothing
+native to compile; needs Node 22.13 or newer), `marked` for the script preview. Server actions do the writes; every page is rendered on demand.

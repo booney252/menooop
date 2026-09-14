@@ -1,4 +1,4 @@
-import Database from "better-sqlite3";
+import type { DatabaseSync } from "node:sqlite";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -61,21 +61,29 @@ CREATE INDEX IF NOT EXISTS videos_posted_at ON videos(posted_at);
 
 declare global {
   // eslint-disable-next-line no-var
-  var __sandboxDb: Database.Database | undefined;
+  var __sandboxDb: DatabaseSync | undefined;
 }
 
-function open(): Database.Database {
+// Node's built-in SQLite (Node 22.13+ / 24). Nothing to compile on install.
+// Loaded through getBuiltinModule so the bundler leaves it alone.
+function sqlite(): typeof import("node:sqlite") {
+  const mod = process.getBuiltinModule?.("node:sqlite") as typeof import("node:sqlite") | undefined;
+  if (!mod) throw new Error("This app needs Node 22.13 or newer (node:sqlite). Run `node -v` to check.");
+  return mod;
+}
+
+function open(): DatabaseSync {
   fs.mkdirSync(DATA_DIR, { recursive: true });
   fs.mkdirSync(EXPORT_DIR, { recursive: true });
-  const db = new Database(DB_PATH);
-  db.pragma("journal_mode = WAL");
-  db.pragma("foreign_keys = ON");
+  const db = new (sqlite().DatabaseSync)(DB_PATH);
+  db.exec("PRAGMA journal_mode = WAL");
+  db.exec("PRAGMA foreign_keys = ON");
   db.exec(SCHEMA);
   return db;
 }
 
 // Cached on globalThis so Next's dev hot reload does not open a new handle per change.
-export function getDb(): Database.Database {
+export function getDb(): DatabaseSync {
   if (!globalThis.__sandboxDb) globalThis.__sandboxDb = open();
   return globalThis.__sandboxDb;
 }
