@@ -46,3 +46,9 @@ reordered, deleted or added on any inspo or idea.
 
 Next.js (App Router) + Tailwind, Node's built-in `node:sqlite` (so nothing
 native to compile; needs Node 22.13 or newer), `marked` for the script preview. Server actions do the writes; every page is rendered on demand.
+
+## Single-file version
+
+`../sandbox.html` at the repo root is the same tool as one HTML file: no
+install, no server. Open it in a browser. Data is saved in that browser's
+storage; Export CSV / Import CSV on the dashboard moves it between devices.

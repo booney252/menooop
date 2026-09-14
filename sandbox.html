@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sandbox</title>
+<style>
+  :root {
+    --bg: #0f0f10; --panel: #17171a; --panel2: #1e1e22; --line: #2a2a30;
+    --fg: #e8e8ea; --mute: #8b8b94; --accent: #7c9cff;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--fg); }
+  body { font: 14px/1.45 Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  input, textarea, select { font: inherit; color: inherit; }
+
+  header { border-bottom: 1px solid var(--line); background: var(--panel); position: sticky; top: 0; z-index: 5; }
+  nav { display: flex; align-items: center; gap: 4px; height: 44px; padding: 0 12px; max-width: 1400px; margin: 0 auto; }
+  nav .brand { font-weight: 600; font-size: 13px; margin-right: 12px; letter-spacing: -.01em; }
+  nav a { text-decoration: none; color: var(--mute); font-size: 13px; padding: 4px 10px; border-radius: 6px; }
+  nav a.active { color: var(--fg); background: var(--panel2); }
+  nav .hint { margin-left: auto; font-size: 12px; color: var(--mute); }
+  main { max-width: 1400px; margin: 0 auto; padding: 16px 12px; }
+  @media (min-width: 768px) { nav { padding: 0 20px; } main { padding: 20px; } nav .hint { display: inline; } }
+  @media (max-width: 767px) { nav .hint { display: none; } }
+
+  h1 { font-size: 16px; font-weight: 600; margin: 0; }
+  .row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .between { justify-content: space-between; }
+  .stack { display: flex; flex-direction: column; gap: 16px; }
+  .label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--mute); margin-bottom: 4px; }
+  .label a { color: var(--accent); text-transform: none; letter-spacing: 0; text-decoration: none; }
+  .label a:hover { text-decoration: underline; }
+  .mute { color: var(--mute); }
+  .small { font-size: 12px; }
+  .tiny { font-size: 11px; }
+  .num { font-variant-numeric: tabular-nums; text-align: right; }
+  .field, .field-bare { width: 100%; outline: none; }
+  .field { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+  .field:focus { border-color: var(--accent); }
+  .field-bare { background: transparent; border: 0; border-radius: 3px; padding: 2px 4px; }
+  .field-bare:focus { background: var(--panel2); }
+  textarea.field, textarea.field-bare { resize: vertical; line-height: 1.5; }
+  ::placeholder { color: color-mix(in srgb, var(--mute) 55%, transparent); }
+  select.field { -webkit-appearance: none; appearance: none; padding-right: 22px; background-image: linear-gradient(45deg, transparent 50%, var(--mute) 50%), linear-gradient(135deg, var(--mute) 50%, transparent 50%); background-position: calc(100% - 12px) 55%, calc(100% - 8px) 55%; background-size: 4px 4px; background-repeat: no-repeat; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 6px 10px; font-size: 13px; white-space: nowrap; }
+  .btn:hover { background: var(--panel2); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn.primary { border-color: color-mix(in srgb, var(--accent) 50%, transparent); background: color-mix(in srgb, var(--accent) 15%, transparent); }
+  .btn.primary:hover { background: color-mix(in srgb, var(--accent) 25%, transparent); }
+  .btn.sm { padding: 4px 8px; font-size: 12px; }
+  .link { color: var(--mute); }
+  .link:hover { color: var(--fg); }
+  kbd { border: 1px solid var(--line); background: var(--panel2); border-radius: 4px; padding: 0 4px; font-size: 11px; color: var(--mute); font-family: inherit; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; }
+  .empty { border: 1px dashed var(--line); border-radius: 6px; padding: 32px 16px; text-align: center; color: var(--mute); }
+  .grid { display: grid; gap: 12px; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .tag { display: inline-block; background: var(--panel2); border-radius: 4px; padding: 0 6px; font-size: 11px; color: var(--mute); }
+  .scroll-x { overflow-x: auto; min-width: 0; max-width: 100%; }
+  .stack > *, .grid > *, .stats > *, .charts > *, .tiles > *, .meta4 > *, .head4 > *, .split > * { min-width: 0; }
+
+  /* inspo */
+  .split { display: grid; gap: 20px; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .split { grid-template-columns: 320px 1fr; } }
+  .list { display: flex; flex-direction: column; gap: 4px; max-height: 40vh; overflow-y: auto; }
+  @media (min-width: 900px) { .list { max-height: none; } }
+  .item { display: block; width: 100%; text-align: left; border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 8px 12px; }
+  .item:hover { background: var(--panel2); }
+  .item.sel { border-color: color-mix(in srgb, var(--accent) 60%, transparent); background: var(--panel2); }
+  .item .t { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .meta4 { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+  @media (min-width: 900px) { .meta4 { grid-template-columns: 1fr 1fr 120px 140px; } .cols-2-md { grid-template-columns: 1fr 1fr; } }
+  .stars { display: flex; gap: 2px; font-size: 18px; line-height: 1; height: 34px; align-items: center; }
+  .stars button { color: color-mix(in srgb, var(--mute) 40%, transparent); }
+  .stars button.on { color: var(--fg); }
+  .embed { aspect-ratio: 16/9; width: 100%; max-width: 720px; background: #000; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .embed iframe { width: 100%; height: 100%; border: 0; }
+
+  /* beats */
+  table.beats { width: 100%; min-width: 720px; border-collapse: collapse; table-layout: fixed; font-size: 13px; }
+  table.beats th { text-align: left; font-weight: 400; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--mute); padding-bottom: 4px; }
+  table.beats td { border-top: 1px solid var(--line); padding: 5px 4px 5px 0; vertical-align: top; }
+  table.beats td.n { color: var(--mute); font-variant-numeric: tabular-nums; padding-top: 7px; }
+  table.beats .hint { padding: 0 4px; font-size: 11px; line-height: 1.3; color: var(--mute); }
+  table.beats .acts { white-space: nowrap; color: var(--mute); padding-top: 7px; }
+  table.beats .acts button { padding: 0 4px; }
+  table.beats .acts button:hover { color: var(--fg); }
+  table.beats .acts button:disabled { opacity: .3; }
+
+  /* kanban */
+  .board { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scroll-snap-type: x mandatory; }
+  .col { flex: 0 0 78vw; scroll-snap-align: start; min-height: 60vh; border: 1px solid var(--line); background: color-mix(in srgb, var(--panel) 60%, transparent); border-radius: 6px; padding: 8px; }
+  @media (min-width: 900px) { .board { display: grid; grid-template-columns: repeat(5, 1fr); overflow: visible; } .col { flex: none; } }
+  .col.over { border-color: color-mix(in srgb, var(--accent) 60%, transparent); background: var(--panel2); }
+  .col h3 { display: flex; justify-content: space-between; margin: 0 4px 8px; font-size: 11px; font-weight: 400; text-transform: uppercase; letter-spacing: .06em; color: var(--mute); }
+  .cards { display: flex; flex-direction: column; gap: 8px; }
+  .kcard { display: block; text-decoration: none; border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 8px 12px; cursor: grab; }
+  .kcard:hover { border-color: color-mix(in srgb, var(--mute) 60%, transparent); }
+  .kcard.drag { opacity: .4; }
+  .kcard .t { font-weight: 500; line-height: 1.3; }
+  .kcard .h { margin-top: 4px; font-size: 12px; color: var(--mute); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .kcard .m { margin-top: 6px; display: flex; gap: 8px; align-items: center; font-size: 11px; color: var(--mute); }
+  .kcard select { margin-left: auto; background: var(--panel2); border: 0; border-radius: 4px; font-size: 11px; color: var(--mute); padding: 1px 4px; }
+
+  /* editor */
+  .head4 { display: grid; gap: 12px; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .head4 { grid-template-columns: 2fr 1fr 160px 1fr; } #ideaActions { width: auto !important; margin-left: auto; } }
+  .editor { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; }
+  .editor .bar { display: flex; align-items: center; gap: 4px; border-bottom: 1px solid var(--line); padding: 4px 8px; font-size: 12px; }
+  .editor .bar button.tab { padding: 2px 8px; border-radius: 4px; color: var(--mute); }
+  .editor .bar button.tab.on { background: var(--panel2); color: var(--fg); }
+  .editor .bar .state { margin-left: auto; color: var(--mute); }
+  .editor .panes { display: grid; grid-template-columns: 1fr; min-height: 420px; }
+  @media (min-width: 900px) { .editor .panes.split { grid-template-columns: 1fr 1fr; } }
+  .editor textarea { width: 100%; min-height: 420px; resize: vertical; background: transparent; border: 0; outline: none; padding: 12px; font: 13px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .editor .md { padding: 12px; }
+  .editor .panes.split .md { border-top: 1px solid var(--line); }
+  @media (min-width: 900px) { .editor .panes.split .md { border-top: 0; border-left: 1px solid var(--line); } }
+  .md { line-height: 1.6; }
+  .md h1 { font-size: 20px; margin: 16px 0 8px; } .md h2 { font-size: 17px; margin: 16px 0 8px; } .md h3 { font-size: 15px; margin: 12px 0 4px; }
+  .md p { margin: 8px 0; } .md ul, .md ol { padding-left: 20px; margin: 8px 0; }
+  .md blockquote { border-left: 2px solid var(--line); padding-left: 12px; color: var(--mute); margin: 8px 0; }
+  .md code { background: var(--panel2); border-radius: 3px; padding: 0 4px; font-size: 13px; }
+  .md pre { background: var(--panel2); border-radius: 6px; padding: 12px; overflow-x: auto; } .md pre code { background: none; padding: 0; }
+  .md hr { border: 0; border-top: 1px solid var(--line); margin: 16px 0; }
+  .md a { color: var(--accent); }
+
+  /* videos */
+  .stats { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+  @media (min-width: 900px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+  .stat .v { margin-top: 4px; font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .charts { display: grid; gap: 12px; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .charts { grid-template-columns: 1fr 1fr; } }
+  .chart svg { display: block; width: 100%; height: 160px; }
+  table.log { border-collapse: collapse; font-size: 13px; min-width: 1500px; width: 100%; }
+  table.log th { text-align: left; font-weight: 400; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--mute); background: var(--panel); padding: 8px 6px; white-space: nowrap; cursor: pointer; }
+  table.log th:hover { color: var(--fg); }
+  table.log td { border-top: 1px solid var(--line); padding: 3px 2px; vertical-align: middle; }
+  table.log tr.hl td { background: color-mix(in srgb, var(--accent) 15%, transparent); }
+  table.log tr:hover td { background: color-mix(in srgb, var(--panel) 70%, transparent); }
+  table.log .x { color: var(--mute); padding: 0 6px; }
+  table.log .x:hover { color: var(--fg); }
+
+  /* dashboard */
+  .tiles { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+  @media (min-width: 600px) { .tiles { grid-template-columns: repeat(4, 1fr); } }
+  @media (min-width: 1000px) { .tiles { grid-template-columns: repeat(8, 1fr); } }
+  .tile { display: block; text-decoration: none; }
+  .tile:hover { background: var(--panel2); }
+  .tile .v { margin-top: 4px; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  table.plain { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 13px; }
+  table.plain th { text-align: left; font-weight: 400; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--mute); background: var(--panel); padding: 8px 12px; }
+  table.plain td { border-top: 1px solid var(--line); padding: 8px 12px; vertical-align: top; }
+  .bordered { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+
+  /* modal */
+  .overlay { position: fixed; inset: 0; z-index: 20; background: rgba(0,0,0,.6); display: flex; align-items: flex-start; justify-content: center; padding-top: 8vh; }
+  @media (min-width: 900px) { .overlay { padding-top: 15vh; } }
+  .modal { width: calc(100vw - 32px); max-width: 440px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+  .modal h2 { font-size: 14px; margin: 0 0 12px; }
+  .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); background: var(--panel2); border: 1px solid var(--line); border-radius: 6px; padding: 8px 12px; font-size: 13px; z-index: 30; max-width: calc(100vw - 32px); }
+</style>
+</head>
+<body>
+<header>
+  <nav id="nav">
+    <span class="brand">sandbox</span>
+    <a href="#/" data-nav="">Dashboard</a>
+    <a href="#/inspo" data-nav="inspo">Inspo</a>
+    <a href="#/ideas" data-nav="ideas">Ideas</a>
+    <a href="#/videos" data-nav="videos">Videos</a>
+    <span class="hint"><kbd>n</kbd> new idea</span>
+  </nav>
+</header>
+<main id="app"></main>
+<input type="file" id="importFile" multiple accept=".csv,text/csv" hidden>
+
+<script>
+'use strict';
+
+// ---------- constants ----------
+const KEY = 'sandbox.v1';
+const PLATFORMS = ['youtube', 'tiktok', 'ig', 'x'];
+const FORMATS = ['vlog', 'talking head', 'carousel', 'short'];
+const STATUSES = ['idea', 'scripted', 'filmed', 'posted', 'killed'];
+const STATUS_LABEL = { idea: 'Idea', scripted: 'Scripted', filmed: 'Filmed', posted: 'Posted', killed: 'Killed' };
+const METRICS = ['views', 'likes', 'comments', 'shares', 'saves', 'follows_gained', 'link_clicks', 'founding_spots'];
+const METRIC_LABEL = { views: 'Views', likes: 'Likes', comments: 'Comments', shares: 'Shares', saves: 'Saves', follows_gained: 'Follows', link_clicks: 'Clicks', founding_spots: 'Spots' };
+const BEAT_NAMES = ['Mission', 'The physical thing', 'Doubt on camera', 'Deep work', 'Metric drop', 'Stranger', 'Character', 'Handout', 'Money / mentor', 'Small win', 'Setback', 'Cliffhanger and ask'];
+const BEAT_HINTS = {
+  'Mission': 'stakes and the number, first 30 seconds', 'The physical thing': 'stunt, prop, location', 'Doubt on camera': 'someone questions it',
+  'Deep work': 'proof of work, short', 'Metric drop': 'a number said in passing', 'Stranger': 'real person, real reaction',
+  'Character': 'someone with personality shows up', 'Handout': 'product in hands', 'Money / mentor': 'investor or mentor asks real questions',
+  'Small win': 'merch, milestone', 'Setback': 'something goes wrong, stakes', 'Cliffhanger and ask': '',
+};
+const COLUMNS = {
+  inspo: ['id', 'url', 'title', 'creator', 'platform', 'added_at', 'transcript', 'notes', 'beats', 'tags', 'rating'],
+  ideas: ['id', 'title', 'hook', 'one_line', 'format', 'status', 'inspo_id', 'script', 'beats', 'created_at', 'updated_at'],
+  videos: ['id', 'idea_id', 'title', 'url', 'platform', 'posted_at', ...METRICS, 'notes', 'logged_at'],
+};
+const INT_COLS = { inspo: ['id', 'rating'], ideas: ['id', 'inspo_id'], videos: ['id', 'idea_id', ...METRICS] };
+
+// ---------- state ----------
+let S = load();
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (s && Array.isArray(s.inspo) && Array.isArray(s.ideas) && Array.isArray(s.videos)) return s;
+    }
+  } catch (e) { console.warn('could not read saved data', e); }
+  return { inspo: [], ideas: [], videos: [] };
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { toast('Could not save. Is storage full or blocked?'); console.error(e); }
+}
+const nextId = (t) => S[t].reduce((m, r) => Math.max(m, r.id), 0) + 1;
+const now = () => new Date().toISOString();
+const today = () => now().slice(0, 10);
+const find = (t, id) => S[t].find((r) => r.id === id) || null;
+function daysAgo(n) { const d = new Date(); d.setUTCDate(d.getUTCDate() - n); return d.toISOString().slice(0, 10); }
+const defaultBeats = () => BEAT_NAMES.map((name) => ({ name, timestamp: '', what_happens: '', why_it_works: '' }));
+const blankBeat = () => ({ name: '', timestamp: '', what_happens: '', why_it_works: '' });
+function parseBeats(v) {
+  let x = v;
+  if (typeof v === 'string') { try { x = JSON.parse(v); } catch { return defaultBeats(); } }
+  if (!Array.isArray(x)) return defaultBeats();
+  return x.map((b) => ({ name: str(b && b.name), timestamp: str(b && b.timestamp), what_happens: str(b && b.what_happens), why_it_works: str(b && b.why_it_works) }));
+}
+const str = (v) => (typeof v === 'string' ? v : v == null ? '' : String(v));
+function intOrNull(v) { if (v === null || v === undefined || v === '') return null; const n = Math.trunc(Number(v)); return Number.isFinite(n) ? n : null; }
+const tagList = (s) => str(s).split(',').map((t) => t.trim()).filter(Boolean);
+const touch = (idea) => { idea.updated_at = now(); };
+
+// ---------- creates ----------
+function createInspo({ url = '', title = '', creator = '' } = {}) {
+  const r = { id: nextId('inspo'), url: url.trim(), title: title.trim(), creator: creator.trim(), platform: detectPlatform(url), added_at: now(), transcript: '', notes: '', beats: defaultBeats(), tags: '', rating: null };
+  S.inspo.unshift(r); save(); return r;
+}
+function createIdea({ title = '', inspo_id = null } = {}) {
+  const r = { id: nextId('ideas'), title, hook: '', one_line: '', format: 'vlog', status: 'idea', inspo_id, script: '', beats: defaultBeats(), created_at: now(), updated_at: now() };
+  S.ideas.unshift(r); save(); return r;
+}
+function createVideo({ title = '', idea_id = null, platform = 'youtube' } = {}) {
+  const r = { id: nextId('videos'), idea_id, title, url: '', platform, posted_at: today(), views: null, likes: null, comments: null, shares: null, saves: null, follows_gained: null, link_clicks: null, founding_spots: null, notes: '', logged_at: now() };
+  S.videos.unshift(r); save(); return r;
+}
+// Moving to posted logs the video, once, pre-linked to the idea.
+function setIdeaStatus(idea, status) {
+  if (!STATUSES.includes(status)) return null;
+  idea.status = status; touch(idea);
+  let video = null;
+  if (status === 'posted') {
+    video = S.videos.find((v) => v.idea_id === idea.id) || null;
+    if (!video) {
+      const inspo = idea.inspo_id ? find('inspo', idea.inspo_id) : null;
+      video = createVideo({ idea_id: idea.id, title: idea.title, platform: idea.format === 'short' ? 'tiktok' : (inspo ? inspo.platform : 'youtube') });
+    }
+  }
+  save();
+  return video;
+}
+
+// ---------- helpers ----------
+function esc(s) { return str(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+function detectPlatform(url) {
+  const u = str(url).toLowerCase();
+  if (u.includes('youtube.com') || u.includes('youtu.be')) return 'youtube';
+  if (u.includes('tiktok.com')) return 'tiktok';
+  if (u.includes('instagram.com')) return 'ig';
+  if (u.includes('twitter.com') || u.includes('x.com')) return 'x';
+  return 'youtube';
+}
+function youtubeId(url) {
+  try {
+    const u = new URL(url); const host = u.hostname.replace(/^(www|m)\./, '');
+    if (host === 'youtu.be') return u.pathname.slice(1).split('/')[0] || null;
+    if (host === 'youtube.com' || host === 'music.youtube.com') {
+      const v = u.searchParams.get('v'); if (v) return v;
+      const m = u.pathname.match(/^\/(?:shorts|embed|live)\/([^/?]+)/); if (m) return m[1];
+    }
+  } catch {}
+  return null;
+}
+const spotsPer1k = (v) => (!v.views || v.views <= 0 ? null : ((v.founding_spots || 0) / v.views) * 1000);
+const fmt = (n) => (n == null ? '—' : Number(n).toLocaleString());
+const opts = (list, cur, labels) => list.map((o) => `<option value="${esc(o)}"${o === cur ? ' selected' : ''}>${esc(labels ? labels[o] : o)}</option>`).join('');
+let toastTimer;
+function toast(msg) {
+  let el = document.querySelector('.toast');
+  if (!el) { el = document.createElement('div'); el.className = 'toast'; document.body.appendChild(el); }
+  el.textContent = msg; clearTimeout(toastTimer); toastTimer = setTimeout(() => el.remove(), 4000);
+}
+
+// ---------- markdown (small, enough for scripts) ----------
+function inline(s) {
+  s = esc(s);
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
+  s = s.replace(/_([^_\n]+)_/g, '<em>$1</em>');
+  s = s.replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+  return s;
+}
+function markdown(src) {
+  const lines = str(src).split('\n'); const out = []; let para = [], list = null, code = null;
+  const flushPara = () => { if (para.length) { out.push('<p>' + para.map(inline).join('<br>') + '</p>'); para = []; } };
+  const flushList = () => { if (list) { out.push(`<${list.tag}>` + list.items.map((i) => `<li>${inline(i)}</li>`).join('') + `</${list.tag}>`); list = null; } };
+  for (const raw of lines) {
+    const line = raw.replace(/\s+$/, '');
+    if (code !== null) { if (/^```/.test(line)) { out.push('<pre><code>' + esc(code.join('\n')) + '</code></pre>'); code = null; } else code.push(line); continue; }
+    if (/^```/.test(line)) { flushPara(); flushList(); code = []; continue; }
+    let m;
+    if ((m = line.match(/^(#{1,3})\s+(.*)$/))) { flushPara(); flushList(); out.push(`<h${m[1].length}>${inline(m[2])}</h${m[1].length}>`); continue; }
+    if (/^(-{3,}|\*{3,})$/.test(line)) { flushPara(); flushList(); out.push('<hr>'); continue; }
+    if ((m = line.match(/^>\s?(.*)$/))) { flushPara(); flushList(); out.push(`<blockquote>${inline(m[1])}</blockquote>`); continue; }
+    if ((m = line.match(/^\s*[-*]\s+(.*)$/))) { flushPara(); if (!list || list.tag !== 'ul') { flushList(); list = { tag: 'ul', items: [] }; } list.items.push(m[1]); continue; }
+    if ((m = line.match(/^\s*\d+[.)]\s+(.*)$/))) { flushPara(); if (!list || list.tag !== 'ol') { flushList(); list = { tag: 'ol', items: [] }; } list.items.push(m[1]); continue; }
+    if (line.trim() === '') { flushPara(); flushList(); continue; }
+    flushList(); para.push(line);
+  }
+  if (code !== null) out.push('<pre><code>' + esc(code.join('\n')) + '</code></pre>');
+  flushPara(); flushList();
+  return out.join('\n');
+}
+
+// ---------- CSV ----------
+function csvCell(v) {
+  if (v === null || v === undefined) return '';
+  const s = typeof v === 'string' ? v : typeof v === 'object' ? JSON.stringify(v) : String(v);
+  return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+function toCsv(rows, cols) {
+  const lines = [cols.join(',')];
+  for (const r of rows) lines.push(cols.map((c) => csvCell(r[c])).join(','));
+  return lines.join('\r\n') + '\r\n';
+}
+function parseCsv(text) {
+  text = text.replace(/^﻿/, '');
+  const rows = []; let row = [], field = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (q) { if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; } else field += c; continue; }
+    if (c === '"') { q = true; continue; }
+    if (c === ',') { row.push(field); field = ''; continue; }
+    if (c === '\r') continue;
+    if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; continue; }
+    field += c;
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  if (!rows.length) return [];
+  const header = rows[0].map((h) => h.trim());
+  return rows.slice(1).filter((r) => r.length > 1 || (r.length === 1 && r[0] !== '')).map((r) => { const o = {}; header.forEach((h, i) => { o[h] = r[i] === undefined ? '' : r[i]; }); return o; });
+}
+function detectTable(cols) {
+  const has = (c) => cols.includes(c);
+  if (has('transcript') && has('rating')) return 'inspo';
+  if (has('script') && has('hook')) return 'ideas';
+  if (has('views') && has('founding_spots')) return 'videos';
+  return null;
+}
+function coerceRow(table, o) {
+  const r = {};
+  for (const c of COLUMNS[table]) {
+    let v = o[c];
+    if (INT_COLS[table].includes(c)) v = intOrNull(v);
+    else if (c === 'beats') v = parseBeats(v);
+    else v = str(v);
+    r[c] = v;
+  }
+  if (table === 'inspo' && !PLATFORMS.includes(r.platform)) r.platform = detectPlatform(r.url);
+  if (table === 'videos' && !PLATFORMS.includes(r.platform)) r.platform = detectPlatform(r.url);
+  if (table === 'ideas') { if (!FORMATS.includes(r.format)) r.format = 'vlog'; if (!STATUSES.includes(r.status)) r.status = 'idea'; }
+  if (table === 'inspo' && r.rating !== null) r.rating = Math.max(1, Math.min(5, r.rating));
+  return r;
+}
+function download(name, text) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8' }));
+  a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+function exportAll() {
+  const stamp = today();
+  for (const t of ['inspo', 'ideas', 'videos']) download(`sandbox-${t}-${stamp}.csv`, toCsv(S[t], COLUMNS[t]));
+  toast('Exported 3 CSV files (inspo, ideas, videos).');
+}
+async function importFiles(files) {
+  const results = [];
+  for (const f of files) {
+    let rows;
+    try { rows = parseCsv(await f.text()); } catch (e) { toast(`Could not read ${f.name}`); continue; }
+    const cols = rows.length ? Object.keys(rows[0]) : [];
+    const table = detectTable(cols);
+    if (!table) { toast(`${f.name}: not a sandbox CSV (need the header row).`); continue; }
+    results.push({ table, rows: rows.map((r) => coerceRow(table, r)).filter((r) => r.id !== null), name: f.name });
+  }
+  if (!results.length) return;
+  const summary = results.map((r) => `${r.table}: replace ${S[r.table].length} rows with ${r.rows.length} from ${r.name}`).join('\n');
+  if (!confirm('Import will replace these tables on this device:\n\n' + summary + '\n\nContinue?')) return;
+  for (const r of results) S[r.table] = r.rows;
+  save(); route();
+  toast('Imported ' + results.map((r) => `${r.rows.length} ${r.table}`).join(', ') + '.');
+}
+document.getElementById('importFile').addEventListener('change', (e) => { importFiles([...e.target.files]); e.target.value = ''; });
+
+// ---------- router ----------
+const app = document.getElementById('app');
+let ui = { q: '', tag: '', platform: '', sort: { key: 'posted_at', dir: -1 }, mode: 'split' };
+function parseHash() {
+  const h = location.hash.replace(/^#\/?/, '');
+  const [path, qs] = h.split('?');
+  return { parts: path.split('/').filter(Boolean), q: Object.fromEntries(new URLSearchParams(qs || '')) };
+}
+function route() {
+  flushScript();
+  const { parts, q } = parseHash();
+  const top = parts[0] || '';
+  document.querySelectorAll('#nav a').forEach((a) => a.classList.toggle('active', a.dataset.nav === top));
+  window.scrollTo(0, 0);
+  if (top === 'inspo') return inspoScreen(q);
+  if (top === 'ideas') return parts[1] ? ideaEditor(Number(parts[1])) : kanban();
+  if (top === 'videos') return videosScreen(q);
+  return dashboard();
+}
+window.addEventListener('hashchange', route);
+const go = (h) => { location.hash = h; };
+
+// ---------- shared: beats table ----------
+function beatsTable(table, rec) {
+  const rows = rec.beats.map((b, i) => `
+    <tr>
+      <td class="n">${i + 1}</td>
+      <td><input class="field-bare" style="font-weight:500" placeholder="beat" data-beat="${table}.${rec.id}.${i}.name" value="${esc(b.name)}">${BEAT_HINTS[b.name] ? `<div class="hint">${esc(BEAT_HINTS[b.name])}</div>` : ''}</td>
+      <td><input class="field-bare num" style="text-align:left" placeholder="0:00" data-beat="${table}.${rec.id}.${i}.timestamp" value="${esc(b.timestamp)}"></td>
+      <td><textarea class="field-bare" rows="2" placeholder="…" data-beat="${table}.${rec.id}.${i}.what_happens">${esc(b.what_happens)}</textarea></td>
+      <td><textarea class="field-bare" rows="2" placeholder="…" data-beat="${table}.${rec.id}.${i}.why_it_works">${esc(b.why_it_works)}</textarea></td>
+      <td class="acts">
+        <button title="Move up" data-act="beat-up" data-arg="${table}.${rec.id}.${i}" ${i === 0 ? 'disabled' : ''}>↑</button>
+        <button title="Move down" data-act="beat-down" data-arg="${table}.${rec.id}.${i}" ${i === rec.beats.length - 1 ? 'disabled' : ''}>↓</button>
+        <button title="Delete beat" data-act="beat-del" data-arg="${table}.${rec.id}.${i}">×</button>
+      </td>
+    </tr>`).join('');
+  return `<div class="scroll-x"><table class="beats">
+    <thead><tr><th style="width:28px">#</th><th style="width:18%">Beat</th><th style="width:64px">Time</th><th>What happens</th><th>Why it works</th><th style="width:68px"></th></tr></thead>
+    <tbody>${rows}</tbody></table></div>
+    <button class="btn sm" style="margin-top:8px" data-act="beat-add" data-arg="${table}.${rec.id}">+ Add beat</button>`;
+}
+function beatAction(act, arg) {
+  const [table, id, i] = arg.split('.'); const rec = find(table, Number(id)); if (!rec) return;
+  const n = Number(i);
+  if (act === 'beat-add') rec.beats.push(blankBeat());
+  else if (act === 'beat-del') rec.beats.splice(n, 1);
+  else if (act === 'beat-up' && n > 0) [rec.beats[n - 1], rec.beats[n]] = [rec.beats[n], rec.beats[n - 1]];
+  else if (act === 'beat-down' && n < rec.beats.length - 1) [rec.beats[n + 1], rec.beats[n]] = [rec.beats[n], rec.beats[n + 1]];
+  if (table === 'ideas') touch(rec);
+  save();
+  const host = document.querySelector('[data-beats-host]'); if (host) host.innerHTML = beatsTable(table, rec);
+}
+
+// ---------- dashboard ----------
+function dashboard() {
+  const since = daysAgo(7);
+  const byStatus = {}, total = {};
+  for (const i of S.ideas) { total[i.status] = (total[i.status] || 0) + 1; if (i.updated_at >= since) byStatus[i.status] = (byStatus[i.status] || 0) + 1; }
+  const week = S.videos.filter((v) => v.posted_at >= since);
+  const views = week.reduce((n, v) => n + (v.views || 0), 0), spots = week.reduce((n, v) => n + (v.founding_spots || 0), 0);
+  const working = S.videos.map((video) => ({ video, rate: spotsPer1k(video) })).filter((x) => x.rate !== null && x.rate > 0).sort((a, b) => b.rate - a.rate).slice(0, 5);
+  const tile = (label, v, sub, href) => `<a class="card tile" href="${href}"><div class="label" style="margin:0">${label}</div><div class="v">${fmt(v)}</div>${sub ? `<div class="tiny mute">${sub}</div>` : ''}</a>`;
+  app.innerHTML = `<div class="stack">
+    <div class="row between">
+      <h1>Dashboard</h1>
+      <div class="row">
+        <a class="btn" href="#/inspo?add=1">+ Inspo</a>
+        <button class="btn" data-act="new-idea">+ Idea</button>
+        <button class="btn" data-act="new-video">+ Video</button>
+        <button class="btn" data-act="export">Export CSV</button>
+        <button class="btn" data-act="import">Import CSV</button>
+      </div>
+    </div>
+    <section>
+      <div class="label">This week · since ${since}</div>
+      <div class="tiles">
+        ${STATUSES.map((s) => tile(STATUS_LABEL[s], byStatus[s] || 0, `${total[s] || 0} total`, '#/ideas')).join('')}
+        ${tile('Videos posted', week.length, '', '#/videos')}${tile('Views', views, '', '#/videos')}${tile('Spots', spots, '', '#/videos')}
+      </div>
+    </section>
+    <section>
+      <div class="label">What's working · top 5 by founding spots per 1k views</div>
+      ${working.length === 0 ? `<div class="empty">Nothing yet. Log a video with views and founding spots and this fills in.</div>` : `
+      <div class="bordered scroll-x"><table class="plain">
+        <thead><tr><th>Video</th><th>Hook</th><th>Format</th><th class="num">Views</th><th class="num">Spots</th><th class="num">Spots / 1k</th></tr></thead>
+        <tbody>${working.map(({ video, rate }) => { const idea = video.idea_id ? find('ideas', video.idea_id) : null; return `<tr>
+          <td><a href="#/videos?highlight=${video.id}" style="font-weight:500;text-decoration:none">${esc(video.title) || '#' + video.id}</a><div class="small mute">${esc(video.platform)} · ${esc(video.posted_at)}</div></td>
+          <td class="mute" style="max-width:420px">${idea ? `<a href="#/ideas/${idea.id}" class="link" style="text-decoration:none">${idea.hook ? esc(idea.hook) : '<em>no hook written</em>'}</a>` : '<em>not linked to an idea</em>'}</td>
+          <td>${idea ? esc(idea.format) : '—'}</td>
+          <td class="num">${fmt(video.views || 0)}</td><td class="num">${video.founding_spots || 0}</td><td class="num" style="font-weight:600">${rate.toFixed(2)}</td></tr>`; }).join('')}</tbody>
+      </table></div>`}
+    </section>
+    <p class="small mute">Data is saved in this browser. Export CSV to back it up or move it to another device, then Import CSV there. Storage is per browser, so a different browser or a cleared history starts empty.</p>
+  </div>`;
+}
+
+// ---------- inspo ----------
+function inspoScreen(q) {
+  const selectedId = q.id ? Number(q.id) : (S.inspo[0] ? S.inspo[0].id : null);
+  app.innerHTML = `<div class="split">
+    <aside class="stack" style="gap:8px">
+      <div class="row" style="flex-wrap:nowrap"><input class="field" id="inspoQ" placeholder="Search" value="${esc(ui.q)}"><button class="btn primary" data-act="inspo-add">+ Add</button></div>
+      <div class="row" style="flex-wrap:nowrap">
+        <select class="field" id="inspoPlatform"><option value="">All platforms</option>${opts(PLATFORMS, ui.platform)}</select>
+        <select class="field" id="inspoTag"></select>
+      </div>
+      <div class="list" id="inspoList"></div>
+    </aside>
+    <section id="inspoDetail" style="min-width:0"></section>
+  </div>${q.add === '1' ? addInspoModal() : ''}`;
+  renderInspoList(selectedId);
+  renderInspoDetail(selectedId);
+  document.getElementById('inspoQ').addEventListener('input', (e) => { ui.q = e.target.value; renderInspoList(selectedId); });
+  document.getElementById('inspoPlatform').addEventListener('change', (e) => { ui.platform = e.target.value; renderInspoList(selectedId); });
+  document.getElementById('inspoTag').addEventListener('change', (e) => { ui.tag = e.target.value; renderInspoList(selectedId); });
+}
+function renderInspoList(selectedId) {
+  const tags = [...new Set(S.inspo.flatMap((i) => tagList(i.tags)))].sort();
+  const tagSel = document.getElementById('inspoTag');
+  if (!tags.includes(ui.tag)) ui.tag = '';
+  tagSel.innerHTML = `<option value="">All tags</option>${opts(tags, ui.tag)}`;
+  const q = ui.q.toLowerCase();
+  const visible = S.inspo.filter((i) => (!ui.platform || i.platform === ui.platform) && (!ui.tag || tagList(i.tags).includes(ui.tag)) && (!q || `${i.title} ${i.creator} ${i.tags} ${i.notes}`.toLowerCase().includes(q)));
+  document.getElementById('inspoList').innerHTML = visible.length === 0
+    ? `<div class="mute" style="padding:24px 8px;text-align:center">${S.inspo.length === 0 ? 'Nothing saved yet.' : 'No matches.'}</div>`
+    : visible.map((i) => `<a class="item${i.id === selectedId ? ' sel' : ''}" href="#/inspo?id=${i.id}" style="text-decoration:none">
+        <div class="t">${esc(i.title) || '<span class="mute">Untitled</span>'}</div>
+        <div class="row small mute" style="gap:6px;flex-wrap:nowrap"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(i.creator) || '—'}</span><span>·</span><span>${esc(i.platform)}</span>${i.rating ? `<span style="margin-left:auto;color:var(--fg)">${'★'.repeat(i.rating)}</span>` : ''}</div>
+        ${i.tags ? `<div class="row" style="gap:4px;margin-top:4px">${tagList(i.tags).map((t) => `<span class="tag">${esc(t)}</span>`).join('')}</div>` : ''}
+      </a>`).join('');
+}
+function renderInspoDetail(id) {
+  const i = id ? find('inspo', id) : null;
+  const host = document.getElementById('inspoDetail');
+  if (!i) { host.innerHTML = `<div class="empty">Select a video, or add one.</div>`; return; }
+  const yt = i.platform === 'youtube' ? youtubeId(i.url) : null;
+  const b = (f) => `data-b="inspo.${i.id}.${f}"`;
+  host.innerHTML = `<div class="stack">
+    <div class="meta4">
+      <div><span class="label">Title</span><input class="field" placeholder="Title" ${b('title')} data-refresh="inspo-list" value="${esc(i.title)}"></div>
+      <div><span class="label">Creator</span><input class="field" placeholder="Creator" ${b('creator')} data-refresh="inspo-list" value="${esc(i.creator)}"></div>
+      <div><span class="label">Platform</span><select class="field" ${b('platform')} data-refresh="inspo">${opts(PLATFORMS, i.platform)}</select></div>
+      <div><span class="label">Steal rating</span><div class="stars">${[1, 2, 3, 4, 5].map((n) => `<button title="${n}" class="${n <= (i.rating || 0) ? 'on' : ''}" data-act="rate" data-arg="${i.id}.${n}">★</button>`).join('')}</div></div>
+    </div>
+    <div class="grid cols-2-md">
+      <div><span class="label">URL${i.url ? ` · <a href="${esc(i.url)}" target="_blank" rel="noreferrer">open ↗</a>` : ''}</span><input class="field" placeholder="https://" ${b('url')} data-refresh="inspo-url" value="${esc(i.url)}"></div>
+      <div><span class="label">Tags (comma separated)</span><input class="field" placeholder="hook, stunt, founder" ${b('tags')} data-refresh="inspo-list" value="${esc(i.tags)}"></div>
+    </div>
+    ${yt ? `<div class="embed"><iframe src="https://www.youtube-nocookie.com/embed/${esc(yt)}" title="YouTube" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>` : ''}
+    <div class="grid cols-2-md">
+      <div><span class="label">Transcript</span><textarea class="field" rows="12" placeholder="Paste the transcript." style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px" ${b('transcript')}>${esc(i.transcript)}</textarea></div>
+      <div><span class="label">Notes</span><textarea class="field" rows="12" placeholder="What to steal, what to skip." ${b('notes')}>${esc(i.notes)}</textarea></div>
+    </div>
+    <div><span class="label">Beats</span><div data-beats-host>${beatsTable('inspo', i)}</div></div>
+    <div class="row between small mute" style="border-top:1px solid var(--line);padding-top:12px"><span>Added ${esc(i.added_at.slice(0, 10))}</span><button class="link" data-act="inspo-del" data-arg="${i.id}">Delete</button></div>
+  </div>`;
+}
+function addInspoModal() {
+  return `<div class="overlay" data-act="modal-close"><form class="modal" id="addInspo" onclick="event.stopPropagation()">
+    <h2>Add inspo</h2>
+    <label class="label">URL</label><input class="field" name="url" placeholder="Paste the link" autofocus style="margin-bottom:12px">
+    <label class="label">Title</label><input class="field" name="title" style="margin-bottom:12px">
+    <label class="label">Creator</label><input class="field" name="creator" style="margin-bottom:12px">
+    <div class="row between"><span class="small mute" id="addPlatform">Platform: —</span><div class="row"><button type="button" class="btn" data-act="modal-close">Cancel</button><button type="submit" class="btn primary">Add</button></div></div>
+  </form></div>`;
+}
+
+// ---------- ideas: kanban ----------
+function kanban() {
+  app.innerHTML = `<div class="stack" style="gap:12px">
+    <div class="row between"><h1>Ideas</h1><button class="btn primary" data-act="new-idea">+ New idea</button></div>
+    <div class="board">${STATUSES.map((s) => { const col = S.ideas.filter((i) => i.status === s); return `
+      <div class="col" data-col="${s}">
+        <h3><span>${STATUS_LABEL[s]}</span><span class="num">${col.length}</span></h3>
+        <div class="cards">${col.map((i) => { const insp = i.inspo_id ? find('inspo', i.inspo_id) : null; return `
+          <a class="kcard" href="#/ideas/${i.id}" draggable="true" data-card="${i.id}">
+            <div class="t">${esc(i.title) || '<span class="mute">Untitled</span>'}</div>
+            ${i.hook ? `<div class="h">${esc(i.hook)}</div>` : ''}
+            <div class="m"><span class="tag">${esc(i.format)}</span>${insp ? `<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">← ${esc(insp.title || insp.creator || '#' + insp.id)}</span>` : ''}
+              <select data-status="${i.id}" title="Move" onclick="event.preventDefault();event.stopPropagation()">${opts(STATUSES, i.status, STATUS_LABEL)}</select></div>
+          </a>`; }).join('')}</div>
+      </div>`; }).join('')}</div>
+    <p class="small mute">Drag cards between columns, or use the small menu on each card.</p>
+  </div>`;
+}
+let dragId = null;
+app.addEventListener('dragstart', (e) => { const c = e.target.closest('[data-card]'); if (!c) return; dragId = Number(c.dataset.card); c.classList.add('drag'); e.dataTransfer.effectAllowed = 'move'; });
+app.addEventListener('dragend', (e) => { const c = e.target.closest('[data-card]'); if (c) c.classList.remove('drag'); dragId = null; document.querySelectorAll('.col.over').forEach((x) => x.classList.remove('over')); });
+app.addEventListener('dragover', (e) => { const col = e.target.closest('[data-col]'); if (!col || dragId === null) return; e.preventDefault(); document.querySelectorAll('.col.over').forEach((x) => x.classList.remove('over')); col.classList.add('over'); });
+app.addEventListener('drop', (e) => { const col = e.target.closest('[data-col]'); if (!col || dragId === null) return; e.preventDefault(); moveIdea(dragId, col.dataset.col); dragId = null; });
+function moveIdea(id, status) {
+  const idea = find('ideas', id); if (!idea || idea.status === status) return;
+  const video = setIdeaStatus(idea, status);
+  if (video) go(`#/videos?highlight=${video.id}`); else route();
+}
+
+// ---------- ideas: editor ----------
+let scriptState = null; // { id, dirty }
+function flushScript() {
+  if (!scriptState) return;
+  const ta = document.getElementById('scriptText'); const idea = find('ideas', scriptState.id);
+  if (ta && idea && scriptState.dirty) { idea.script = ta.value; touch(idea); save(); }
+  scriptState = null;
+}
+function ideaEditor(id) {
+  const idea = find('ideas', id);
+  if (!idea) { app.innerHTML = `<div class="empty">That idea does not exist. <a href="#/ideas">Back to Ideas</a></div>`; return; }
+  const linked = idea.inspo_id ? find('inspo', idea.inspo_id) : null;
+  const b = (f) => `data-b="ideas.${id}.${f}"`;
+  scriptState = { id, dirty: false };
+  app.innerHTML = `<div class="stack">
+    <div class="row">
+      <a class="link" href="#/ideas" style="text-decoration:none;white-space:nowrap">← Ideas</a>
+      <input class="field-bare" style="flex:1;min-width:160px;font-size:18px;font-weight:600" placeholder="Untitled idea" ${b('title')} value="${esc(idea.title)}">
+      <div class="row" style="flex-wrap:nowrap;width:100%" id="ideaActions">
+        <select class="field" style="width:130px" data-act-status="${id}">${opts(STATUSES, idea.status, STATUS_LABEL)}</select>
+        ${idea.status !== 'filmed' && idea.status !== 'posted' ? `<button class="btn" data-act="mark" data-arg="${id}.filmed">Mark as filmed</button>` : ''}
+        ${idea.status !== 'posted' ? `<button class="btn primary" data-act="mark" data-arg="${id}.posted">Mark as posted</button>` : `<a class="btn" href="#/videos" style="text-decoration:none">Open in Videos →</a>`}
+      </div>
+    </div>
+    <div class="head4">
+      <div><span class="label">Hook</span><textarea class="field" rows="2" placeholder="First line out of my mouth." ${b('hook')}>${esc(idea.hook)}</textarea></div>
+      <div><span class="label">One-liner</span><textarea class="field" rows="2" placeholder="What the video is." ${b('one_line')}>${esc(idea.one_line)}</textarea></div>
+      <div><span class="label">Format</span><select class="field" ${b('format')}>${opts(FORMATS, idea.format)}</select></div>
+      <div><span class="label">Based on</span><div class="row" style="flex-wrap:nowrap">
+        <select class="field" ${b('inspo_id')} data-refresh="editor"><option value="">— none —</option>${S.inspo.map((i) => `<option value="${i.id}"${i.id === idea.inspo_id ? ' selected' : ''}>${esc(i.title || 'Untitled')}${i.creator ? ' · ' + esc(i.creator) : ''}</option>`).join('')}</select>
+        ${linked ? `<a class="link" href="#/inspo?id=${linked.id}" title="Open inspo" style="text-decoration:none">↗</a>` : ''}</div></div>
+    </div>
+    <div>
+      <div class="row between" style="margin-bottom:4px"><span class="label" style="margin:0">Beats</span><button class="btn sm" data-act="copy-beats" data-arg="${id}" ${linked ? '' : 'disabled title="Pick an inspo first"'}>Copy beats from inspo</button></div>
+      <div data-beats-host>${beatsTable('ideas', idea)}</div>
+    </div>
+    <div>
+      <span class="label">Script</span>
+      <div class="editor">
+        <div class="bar">
+          ${['write', 'split', 'preview'].map((m) => `<button class="tab${ui.mode === m ? ' on' : ''}" data-act="mode" data-arg="${m}">${m}</button>`).join('')}
+          <span class="state" id="scriptState">saved</span>
+          <button class="btn sm" id="scriptSave" data-act="script-save" disabled>Save <kbd>⌘S</kbd></button>
+        </div>
+        <div class="panes${ui.mode === 'split' ? ' split' : ''}" id="panes">
+          <textarea id="scriptText" placeholder="# Title&#10;&#10;Hook…&#10;&#10;## Beat 1 · Mission" ${ui.mode === 'preview' ? 'hidden' : ''}>${esc(idea.script)}</textarea>
+          <div class="md" id="scriptPreview" ${ui.mode === 'write' ? 'hidden' : ''}>${markdown(idea.script)}</div>
+        </div>
+      </div>
+    </div>
+    <div class="row between small mute" style="border-top:1px solid var(--line);padding-top:12px"><span>Created ${esc(idea.created_at.slice(0, 10))} · updated ${esc(idea.updated_at.slice(0, 10))}</span><button class="link" data-act="idea-del" data-arg="${id}">Delete</button></div>
+  </div>`;
+  const ta = document.getElementById('scriptText');
+  ta.addEventListener('input', () => {
+    scriptState.dirty = ta.value !== idea.script;
+    document.getElementById('scriptState').textContent = scriptState.dirty ? 'unsaved' : 'saved';
+    document.getElementById('scriptSave').disabled = !scriptState.dirty;
+    document.getElementById('scriptPreview').innerHTML = markdown(ta.value);
+  });
+  document.querySelector('[data-act-status]').addEventListener('change', (e) => { const v = setIdeaStatus(idea, e.target.value); if (v) go(`#/videos?highlight=${v.id}`); else ideaEditor(id); });
+}
+function saveScript() {
+  if (!scriptState) return;
+  const ta = document.getElementById('scriptText'); const idea = find('ideas', scriptState.id);
+  if (!ta || !idea) return;
+  idea.script = ta.value; touch(idea); save(); scriptState.dirty = false;
+  document.getElementById('scriptState').textContent = 'saved';
+  document.getElementById('scriptSave').disabled = true;
+}
+window.addEventListener('beforeunload', () => { flushScript(); });
+
+// ---------- videos ----------
+function videosScreen(q) {
+  const hl = q.highlight ? Number(q.highlight) : null;
+  app.innerHTML = `<div class="stack">
+    <div class="row between"><h1>Videos</h1><button class="btn primary" data-act="new-video">+ Log video</button></div>
+    <div class="stack" id="videoTop">${videoTopHtml()}</div>
+    <div id="videoTable">${videoTableHtml(hl)}</div>
+  </div>`;
+  if (hl) { const r = document.getElementById('video-' + hl); if (r) r.scrollIntoView({ block: 'center' }); }
+}
+function videoTopHtml() {
+  const vs = S.videos;
+  const since30 = daysAgo(30);
+  const views30 = vs.filter((v) => v.posted_at >= since30).reduce((n, v) => n + (v.views || 0), 0);
+  const totalSpots = vs.reduce((n, v) => n + (v.founding_spots || 0), 0);
+  const bestViews = vs.reduce((b, v) => ((v.views || 0) > ((b && b.views) || 0) ? v : b), null);
+  const bestRate = vs.map((v) => ({ v, rate: spotsPer1k(v) })).filter((x) => x.rate !== null && x.rate > 0).sort((a, b) => b.rate - a.rate)[0] || null;
+  const label = (v) => v.title || '#' + v.id;
+  const last20 = [...vs].sort((a, b) => a.posted_at.localeCompare(b.posted_at) || a.id - b.id).slice(-20);
+  const stat = (l, v, sub) => `<div class="card stat"><div class="label" style="margin:0">${l}</div><div class="v">${v}</div>${sub ? `<div class="small mute">${sub}</div>` : ''}</div>`;
+  return `<div class="stats">
+      ${stat('Views, last 30 days', fmt(views30))}${stat('Founding spots, all time', fmt(totalSpots))}
+      ${stat('Best by views', bestViews ? esc(label(bestViews)) : '—', bestViews ? fmt(bestViews.views) + ' views' : '')}
+      ${stat('Best by spots / 1k views', bestRate ? esc(label(bestRate.v)) : '—', bestRate ? bestRate.rate.toFixed(2) + ' per 1k' : '')}
+    </div>
+    <div class="charts">
+      ${barChart('Views per video, last 20', last20.map((v) => ({ label: label(v), value: v.views || 0 })), '')}
+      ${barChart('Founding spots per video, last 20', last20.map((v) => ({ label: label(v), value: v.founding_spots || 0 })), 'spots')}
+    </div>`;
+}
+function videoTableHtml(hl) {
+  const vs = S.videos;
+  const { key, dir } = ui.sort;
+  const get = (v) => (key === 'rate' ? spotsPer1k(v) : v[key]);
+  const sorted = [...vs].sort((a, b) => { const x = get(a), y = get(b); if (x == null || x === '') return 1; if (y == null || y === '') return -1; return (typeof x === 'number' && typeof y === 'number' ? x - y : String(x).localeCompare(String(y))) * dir; });
+  const cols = [['title', 'Title'], ['url', 'URL'], ['platform', 'Platform'], ['posted_at', 'Posted'], ...METRICS.map((m) => [m, METRIC_LABEL[m]]), ['rate', 'Spots/1k'], ['notes', 'Notes']];
+  return `<div class="bordered scroll-x"><table class="log">
+      <thead><tr>${cols.map(([k, l]) => `<th data-sort="${k}" class="${METRICS.includes(k) || k === 'rate' ? 'num' : ''}">${l}${key === k ? (dir === 1 ? ' ↑' : ' ↓') : ''}</th>`).join('')}<th></th></tr></thead>
+      <tbody>${sorted.length === 0 ? `<tr><td colspan="${cols.length + 1}" class="mute" style="text-align:center;padding:32px">No videos logged. Post an idea, or log one by hand.</td></tr>` : sorted.map((v) => { const idea = v.idea_id ? find('ideas', v.idea_id) : null; const b = (f) => `data-b="videos.${v.id}.${f}"`; return `
+        <tr class="${v.id === hl ? 'hl' : ''}" id="video-${v.id}">
+          <td style="min-width:200px"><input class="field-bare" placeholder="Title" ${b('title')} data-refresh="videos-soft" value="${esc(v.title)}">${idea ? `<a class="link tiny" href="#/ideas/${idea.id}" style="display:block;padding:0 4px;text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">← ${esc(idea.title || 'idea #' + idea.id)}</a>` : ''}</td>
+          <td style="min-width:140px"><div class="row" style="flex-wrap:nowrap;gap:2px"><input class="field-bare" placeholder="https://" ${b('url')} data-refresh="videos-soft" value="${esc(v.url)}">${v.url ? `<a href="${esc(v.url)}" target="_blank" rel="noreferrer" class="link" style="text-decoration:none">↗</a>` : ''}</div></td>
+          <td><select class="field-bare" ${b('platform')}>${opts(PLATFORMS, v.platform)}</select></td>
+          <td><input class="field-bare" type="date" ${b('posted_at')} data-refresh="videos-soft" value="${esc(v.posted_at)}"></td>
+          ${METRICS.map((m) => `<td style="width:76px"><input class="field-bare num" inputmode="numeric" data-int ${b(m)} data-refresh="videos-soft" value="${v[m] == null ? '' : v[m]}"></td>`).join('')}
+          <td class="num mute rate" style="padding-right:8px">${spotsPer1k(v) === null ? '—' : spotsPer1k(v).toFixed(2)}</td>
+          <td style="min-width:220px"><input class="field-bare" placeholder="What worked / didn't" ${b('notes')} value="${esc(v.notes)}"></td>
+          <td><button class="x" title="Delete" data-act="video-del" data-arg="${v.id}">×</button></td>
+        </tr>`; }).join('')}</tbody>
+    </table></div>`;
+}
+app.addEventListener('click', (e) => {
+  const th = e.target.closest('[data-sort]'); if (!th) return;
+  const k = th.dataset.sort; ui.sort = { key: k, dir: ui.sort.key === k ? -ui.sort.dir : (k === 'title' || k === 'platform' ? 1 : -1) };
+  document.getElementById('videoTable').innerHTML = videoTableHtml(null);
+});
+// Update stats, charts and the row's rate without rebuilding the table, so focus survives tabbing between cells.
+function videoSoftRefresh(id) {
+  const top = document.getElementById('videoTop'); if (top) top.innerHTML = videoTopHtml();
+  const v = find('videos', id); const row = document.getElementById('video-' + id);
+  if (v && row) { const rate = row.querySelector('td.rate'); if (rate) rate.textContent = spotsPer1k(v) === null ? '—' : spotsPer1k(v).toFixed(2); const sel = row.querySelector('select[data-b$=".platform"]'); if (sel) sel.value = v.platform; }
+}
+function barChart(title, data, unit) {
+  const w = 640, h = 160, pad = { l: 8, r: 8, t: 18, b: 26 };
+  const max = Math.max(1, ...data.map((d) => d.value)); const n = Math.max(1, data.length);
+  const slot = (w - pad.l - pad.r) / n; const bw = Math.max(4, Math.min(28, slot * 0.7));
+  const f = (v) => (v >= 1000 ? (v / 1000).toFixed(v >= 10000 ? 0 : 1) + 'k' : String(v));
+  const maxLabel = Math.max(3, Math.floor(slot / 5.5));
+  const bars = data.map((d, i) => { const x = pad.l + i * slot + (slot - bw) / 2; const bh = ((h - pad.t - pad.b) * d.value) / max; const y = h - pad.b - bh; const lab = d.label.length > maxLabel ? d.label.slice(0, Math.max(2, maxLabel - 1)) + '…' : d.label; return `<g><title>${esc(d.label)}: ${d.value}${unit ? ' ' + unit : ''}</title><rect x="${x}" y="${y}" width="${bw}" height="${bh}" fill="var(--accent)" opacity=".85" rx="2"/>${d.value > 0 ? `<text x="${x + bw / 2}" y="${y - 3}" text-anchor="middle" font-size="9" fill="var(--mute)">${f(d.value)}</text>` : ''}<text x="${x + bw / 2}" y="${h - pad.b + 12}" text-anchor="middle" font-size="9" fill="var(--mute)">${esc(lab)}</text></g>`; }).join('');
+  return `<div class="card chart"><div class="row between" style="margin-bottom:4px"><span class="label" style="margin:0">${title}</span><span class="tiny mute">${data.length ? `max ${f(max)}${unit ? ' ' + unit : ''}` : ''}</span></div>
+    ${data.length === 0 ? `<div class="mute small" style="text-align:center;padding:40px 0">No videos yet.</div>` : `<svg viewBox="0 0 ${w} ${h}" role="img"><line x1="${pad.l}" x2="${w - pad.r}" y1="${h - pad.b}" y2="${h - pad.b}" stroke="var(--line)"/>${bars}</svg>`}</div>`;
+}
+
+// Re-render, then put focus back on the same bound field (by its data-b / data-beat key).
+function keepFocus(fn) {
+  const a = document.activeElement; const key = a && (a.dataset.b ? `[data-b="${a.dataset.b}"]` : a.dataset.beat ? `[data-beat="${a.dataset.beat}"]` : null);
+  const pos = a && typeof a.selectionStart === 'number' ? a.selectionStart : null;
+  fn();
+  if (!key) return;
+  const el = document.querySelector(key); if (!el) return;
+  el.focus(); if (pos !== null && typeof el.setSelectionRange === 'function') { try { el.setSelectionRange(pos, pos); } catch {} }
+}
+
+// ---------- data binding ----------
+// data-b="table.id.field": saves on every keystroke. data-refresh says what to re-render on change (blur).
+app.addEventListener('input', (e) => {
+  const el = e.target;
+  if (el.dataset.b) {
+    const [table, id, field] = el.dataset.b.split('.'); const rec = find(table, Number(id)); if (!rec) return;
+    let v = el.value;
+    if (el.hasAttribute('data-int')) { el.value = v.replace(/[^\d-]/g, ''); v = intOrNull(el.value); }
+    else if (field === 'inspo_id') v = intOrNull(v);
+    else if (field === 'rating') v = intOrNull(v);
+    if (field === 'posted_at' && !/^\d{4}-\d{2}-\d{2}$/.test(v)) return;
+    if (field === 'platform' && !PLATFORMS.includes(v)) return;
+    if (field === 'format' && !FORMATS.includes(v)) return;
+    rec[field] = v;
+    if (field === 'url' && v) rec.platform = detectPlatform(v);
+    if (table === 'ideas') touch(rec);
+    save();
+    return;
+  }
+  if (el.dataset.beat) {
+    const [table, id, i, field] = el.dataset.beat.split('.'); const rec = find(table, Number(id)); if (!rec || !rec.beats[i]) return;
+    rec.beats[i][field] = el.value; if (table === 'ideas') touch(rec); save();
+  }
+  if (el.form && el.form.id === 'addInspo' && el.name === 'url') document.getElementById('addPlatform').textContent = 'Platform: ' + (el.value ? detectPlatform(el.value) : '—');
+});
+app.addEventListener('change', (e) => {
+  const el = e.target;
+  if (el.dataset.status) { moveIdea(Number(el.dataset.status), el.value); return; }
+  const r = el.dataset.refresh; if (!r) return;
+  const { q } = parseHash();
+  if (r === 'inspo-list') renderInspoList(q.id ? Number(q.id) : (S.inspo[0] ? S.inspo[0].id : null));
+  else if (r === 'inspo' || r === 'inspo-url') { const id = q.id ? Number(q.id) : (S.inspo[0] ? S.inspo[0].id : null); keepFocus(() => { renderInspoList(id); renderInspoDetail(id); }); }
+  else if (r === 'editor') { const id = Number(parseHash().parts[1]); flushScript(); ideaEditor(id); }
+  else if (r === 'videos-soft') videoSoftRefresh(Number(el.dataset.b.split('.')[1]));
+});
+app.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.matches('input[data-b], input[data-beat]')) { e.preventDefault(); e.target.blur(); }
+});
+
+// ---------- actions ----------
+app.addEventListener('submit', (e) => {
+  if (e.target.id !== 'addInspo') return;
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const r = createInspo({ url: fd.get('url'), title: fd.get('title'), creator: fd.get('creator') });
+  go(`#/inspo?id=${r.id}`);
+});
+app.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-act]'); if (!btn) return;
+  if (btn.classList.contains('overlay') && e.target !== btn) return;
+  const act = btn.dataset.act, arg = btn.dataset.arg || '';
+  if (act.startsWith('beat-')) return beatAction(act, arg);
+  switch (act) {
+    case 'new-idea': { const r = createIdea(); go(`#/ideas/${r.id}`); break; }
+    case 'new-video': { const r = createVideo(); go(`#/videos?highlight=${r.id}`); if (location.hash.startsWith('#/videos')) videosScreen({ highlight: r.id }); break; }
+    case 'export': exportAll(); break;
+    case 'import': document.getElementById('importFile').click(); break;
+    case 'inspo-add': go('#/inspo?add=1'); break;
+    case 'modal-close': { const { q } = parseHash(); if (q.add) go('#/inspo' + (q.id ? `?id=${q.id}` : '')); break; }
+    case 'rate': { const [id, n] = arg.split('.').map(Number); const i = find('inspo', id); if (i) { i.rating = i.rating === n ? null : n; save(); renderInspoList(id); renderInspoDetail(id); } break; }
+    case 'inspo-del': { if (!confirm('Delete this inspo video?')) break; S.inspo = S.inspo.filter((i) => i.id !== Number(arg)); S.ideas.forEach((i) => { if (i.inspo_id === Number(arg)) i.inspo_id = null; }); save(); go('#/inspo'); if (location.hash === '#/inspo') route(); break; }
+    case 'copy-beats': {
+      const idea = find('ideas', Number(arg)); const inspo = idea && idea.inspo_id ? find('inspo', idea.inspo_id) : null; if (!inspo) break;
+      if (idea.beats.some((b) => b.what_happens || b.why_it_works) && !confirm("Replace the current beats with the inspo's structure?")) break;
+      idea.beats = inspo.beats.map((b) => ({ name: b.name, timestamp: '', what_happens: '', why_it_works: b.why_it_works })); touch(idea); save();
+      document.querySelector('[data-beats-host]').innerHTML = beatsTable('ideas', idea); break;
+    }
+    case 'mark': { const [id, status] = arg.split('.'); const idea = find('ideas', Number(id)); if (!idea) break; flushScript(); const v = setIdeaStatus(idea, status); if (v) go(`#/videos?highlight=${v.id}`); else ideaEditor(Number(id)); break; }
+    case 'mode': { ui.mode = arg; const id = Number(parseHash().parts[1]); flushScript(); ideaEditor(id); break; }
+    case 'script-save': saveScript(); break;
+    case 'idea-del': { if (!confirm('Delete this idea?')) break; scriptState = null; S.ideas = S.ideas.filter((i) => i.id !== Number(arg)); S.videos.forEach((v) => { if (v.idea_id === Number(arg)) v.idea_id = null; }); save(); go('#/ideas'); break; }
+    case 'video-del': { if (!confirm('Delete this video row?')) break; S.videos = S.videos.filter((v) => v.id !== Number(arg)); save(); videosScreen({}); break; }
+  }
+});
+
+// ---------- keyboard ----------
+document.addEventListener('keydown', (e) => {
+  const t = e.target; const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable);
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { if (scriptState) { e.preventDefault(); saveScript(); } return; }
+  if (e.key === 'n' && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); const r = createIdea(); go(`#/ideas/${r.id}`); return; }
+  if (e.key === 'Escape') {
+    if (document.querySelector('.overlay')) { const { q } = parseHash(); go('#/inspo' + (q.id ? `?id=${q.id}` : '')); return; }
+    if (!typing && scriptState) go('#/ideas');
+  }
+});
+
+route();
+</script>
+</body>
+</html>
