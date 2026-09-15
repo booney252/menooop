@@ -177,6 +177,7 @@
   </nav>
 </header>
 <main id="app"></main>
+<div id="modalHost"></div>
 <input type="file" id="importFile" multiple accept=".csv,text/csv" hidden>
 
 <script>
@@ -569,7 +570,7 @@ function renderInspoDetail(id) {
   </div>`;
 }
 function addInspoModal() {
-  return `<div class="overlay" data-act="modal-close"><form class="modal" id="addInspo" onclick="event.stopPropagation()">
+  return `<div class="overlay" data-act="modal-close"><form class="modal" id="addInspo">
     <h2>Add inspo</h2>
     <label class="label">URL</label><input class="field" name="url" placeholder="Paste the link" autofocus style="margin-bottom:12px">
     <label class="label">Title</label><input class="field" name="title" style="margin-bottom:12px">
@@ -607,14 +608,49 @@ function moveIdea(id, status) {
   if (video) go(`#/videos?highlight=${video.id}`); else route();
 }
 
-// ---------- ideas: editor ----------
-let scriptState = null; // { id, dirty }
-function flushScript() {
-  if (!scriptState) return;
-  const ta = document.getElementById('scriptText'); const idea = find('ideas', scriptState.id);
-  if (ta && idea && scriptState.dirty) { idea.script = ta.value; touch(idea); save(); }
-  scriptState = null;
+// ---------- script history ----------
+// A rolling set of earlier versions per idea, kept separately from the records so
+// it never bloats an export. Purely a safety net against losing written work.
+const HKEY = 'sandbox.history.v1';
+const HISTORY_MAX = 25;
+function readHistory() { try { return JSON.parse(localStorage.getItem(HKEY)) || {}; } catch { return {}; } }
+function pushHistory(ideaId, text) {
+  if (!str(text).trim()) return;
+  const h = readHistory(); const list = h[ideaId] || [];
+  if (list.length && list[list.length - 1].text === text) return;
+  list.push({ t: now(), text });
+  while (list.length > HISTORY_MAX) list.shift();
+  h[ideaId] = list;
+  for (let guard = 0; guard < 500; guard++) {
+    try { localStorage.setItem(HKEY, JSON.stringify(h)); return; } catch (e) {
+      // Storage full: drop the oldest version anywhere rather than lose the newest.
+      let oldest = null;
+      for (const k of Object.keys(h)) if (h[k].length && (oldest === null || h[k][0].t < h[oldest][0].t)) oldest = k;
+      if (oldest === null) return;
+      h[oldest].shift(); if (!h[oldest].length) delete h[oldest];
+    }
+  }
 }
+const getHistory = (ideaId) => (readHistory()[ideaId] || []).slice().reverse();
+
+// ---------- ideas: editor ----------
+let scriptState = null; // { id, dirty, timer }
+function setScriptStatus(t) {
+  const el = document.getElementById('scriptState'); if (el) el.textContent = t;
+  const b = document.getElementById('scriptSave'); if (b) b.disabled = t === 'saved';
+}
+// The single save path. Writes the textarea into the record and snapshots a version.
+function saveScript() {
+  if (!scriptState) return;
+  clearTimeout(scriptState.timer);
+  const ta = document.getElementById('scriptText'); const idea = find('ideas', scriptState.id);
+  if (!ta || !idea) return;
+  if (ta.value !== idea.script) { idea.script = ta.value; touch(idea); save(); pushHistory(idea.id, ta.value); }
+  scriptState.dirty = false;
+  setScriptStatus('saved');
+}
+// Always call this before anything that re-renders or navigates away from the editor.
+function flushScript() { saveScript(); if (scriptState) clearTimeout(scriptState.timer); scriptState = null; }
 function ideaEditor(id) {
   const idea = find('ideas', id);
   if (!idea) { app.innerHTML = `<div class="empty">That idea does not exist. <a href="#/ideas">Back to Ideas</a></div>`; return; }
@@ -649,6 +685,7 @@ function ideaEditor(id) {
         <div class="bar">
           ${['write', 'split', 'preview'].map((m) => `<button class="tab${ui.mode === m ? ' on' : ''}" data-act="mode" data-arg="${m}">${m}</button>`).join('')}
           <span class="state" id="scriptState">saved</span>
+          <button class="btn sm" style="margin-left:8px" data-act="history" data-arg="${id}">History</button>
           <button class="btn sm" id="scriptSave" data-act="script-save" disabled>Save <kbd>⌘S</kbd></button>
         </div>
         <div class="panes${ui.mode === 'split' ? ' split' : ''}" id="panes">
@@ -662,21 +699,59 @@ function ideaEditor(id) {
   const ta = document.getElementById('scriptText');
   ta.addEventListener('input', () => {
     scriptState.dirty = ta.value !== idea.script;
-    document.getElementById('scriptState').textContent = scriptState.dirty ? 'unsaved' : 'saved';
-    document.getElementById('scriptSave').disabled = !scriptState.dirty;
+    setScriptStatus(scriptState.dirty ? 'saving…' : 'saved');
     document.getElementById('scriptPreview').innerHTML = markdown(ta.value);
+    clearTimeout(scriptState.timer);
+    scriptState.timer = setTimeout(saveScript, 600); // autosave, so nothing waits on Cmd+S
   });
-  document.querySelector('[data-act-status]').addEventListener('change', (e) => { const v = setIdeaStatus(idea, e.target.value); if (v) go(`#/videos?highlight=${v.id}`); else ideaEditor(id); });
-}
-function saveScript() {
-  if (!scriptState) return;
-  const ta = document.getElementById('scriptText'); const idea = find('ideas', scriptState.id);
-  if (!ta || !idea) return;
-  idea.script = ta.value; touch(idea); save(); scriptState.dirty = false;
-  document.getElementById('scriptState').textContent = 'saved';
-  document.getElementById('scriptSave').disabled = true;
+  ta.addEventListener('blur', saveScript);
+  document.querySelector('[data-act-status]').addEventListener('change', (e) => {
+    const status = e.target.value;
+    flushScript(); // save the script before this re-renders the editor
+    const v = setIdeaStatus(idea, status);
+    if (v) go(`#/videos?highlight=${v.id}`); else ideaEditor(id);
+  });
 }
 window.addEventListener('beforeunload', () => { flushScript(); });
+window.addEventListener('pagehide', () => { flushScript(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveScript(); });
+
+// ---------- history dialog ----------
+const modalHost = document.getElementById('modalHost');
+const closeModal = () => { modalHost.innerHTML = ''; };
+function openHistory(ideaId) {
+  saveScript();
+  const list = getHistory(ideaId);
+  modalHost.innerHTML = `<div class="overlay" data-act="dlg-close"><div class="modal" style="max-width:640px">
+    <div class="row between" style="margin-bottom:12px"><h2 style="margin:0">Script history</h2><button class="link" data-act="dlg-close">✕</button></div>
+    ${list.length === 0 ? `<p class="mute small">No earlier versions saved for this idea yet.</p>` : `<div class="list" style="max-height:56vh;gap:8px">${list.map((v, i) => `
+      <div class="card" style="display:flex;gap:12px;align-items:flex-start">
+        <div style="flex:1;min-width:0">
+          <div class="small">${esc(new Date(v.t).toLocaleString())} · ${v.text.length} chars</div>
+          <div class="tiny mute" style="white-space:pre-wrap;max-height:46px;overflow:hidden;margin-top:4px">${esc(v.text.slice(0, 200))}</div>
+        </div>
+        <button class="btn sm" data-act="restore" data-arg="${ideaId}.${i}">Restore</button>
+      </div>`).join('')}</div>`}
+    <p class="tiny mute" style="margin:12px 0 0">Kept in this browser only, newest first, last ${HISTORY_MAX} versions per idea. Restoring keeps the current text as a version too, so it is never a one-way door.</p>
+  </div></div>`;
+}
+modalHost.addEventListener('click', (e) => {
+  const t = e.target.closest('[data-act]'); if (!t) return;
+  const act = t.dataset.act;
+  if (act === 'dlg-close') { if (t.classList.contains('overlay') && e.target !== t) return; closeModal(); return; }
+  if (act !== 'restore') return;
+  const [idStr, iStr] = t.dataset.arg.split('.');
+  const ideaId = Number(idStr); const v = getHistory(ideaId)[Number(iStr)];
+  const ta = document.getElementById('scriptText'); const idea = find('ideas', ideaId);
+  if (!v || !ta || !idea) return;
+  pushHistory(ideaId, ta.value); // the text being replaced stays recoverable
+  ta.value = v.text; idea.script = v.text; touch(idea); save(); pushHistory(ideaId, v.text);
+  if (scriptState) scriptState.dirty = false;
+  setScriptStatus('saved');
+  document.getElementById('scriptPreview').innerHTML = markdown(v.text);
+  closeModal();
+  toast('Restored the version from ' + new Date(v.t).toLocaleString());
+});
 
 // ---------- videos ----------
 function videosScreen(q) {
@@ -831,6 +906,7 @@ app.addEventListener('click', (e) => {
     case 'mark': { const [id, status] = arg.split('.'); const idea = find('ideas', Number(id)); if (!idea) break; flushScript(); const v = setIdeaStatus(idea, status); if (v) go(`#/videos?highlight=${v.id}`); else ideaEditor(Number(id)); break; }
     case 'mode': { ui.mode = arg; const id = Number(parseHash().parts[1]); flushScript(); ideaEditor(id); break; }
     case 'script-save': saveScript(); break;
+    case 'history': openHistory(Number(arg)); break;
     case 'idea-del': { if (!confirm('Delete this idea?')) break; scriptState = null; S.ideas = S.ideas.filter((i) => i.id !== Number(arg)); S.videos.forEach((v) => { if (v.idea_id === Number(arg)) v.idea_id = null; }); save(); go('#/ideas'); break; }
     case 'video-del': { if (!confirm('Delete this video row?')) break; S.videos = S.videos.filter((v) => v.id !== Number(arg)); save(); videosScreen({}); break; }
   }
@@ -842,6 +918,7 @@ document.addEventListener('keydown', (e) => {
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') { if (scriptState) { e.preventDefault(); saveScript(); } return; }
   if (e.key === 'n' && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) { e.preventDefault(); const r = createIdea(); go(`#/ideas/${r.id}`); return; }
   if (e.key === 'Escape') {
+    if (modalHost.firstChild) { closeModal(); return; }
     if (document.querySelector('.overlay')) { const { q } = parseHash(); go('#/inspo' + (q.id ? `?id=${q.id}` : '')); return; }
     if (!typing && scriptState) go('#/ideas');
   }

@@ -25,8 +25,11 @@ array on the row.
 
 ## Behaviour
 
-- Every field saves on blur. The only save button is the script editor
-  (`Cmd+S` / `Ctrl+S`).
+- Every field saves as you type. The script editor autosaves about a second
+  after you stop typing; `Cmd+S` / `Ctrl+S` saves it immediately.
+- The script editor keeps the last 25 versions per idea. **History** in the
+  editor bar lists them and restores any one. History lives in the browser
+  only and is not part of the CSV export.
 - `n` anywhere outside a text field creates a new idea and opens it.
 - Moving an idea to **Posted** (drag, dropdown, or the button) creates a row
   in Videos pre-linked to the idea, once.
